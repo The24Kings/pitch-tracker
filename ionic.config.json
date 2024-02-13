@@ -1,0 +1,7 @@
+{
+  "name": "pitch-tracker",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
