@@ -10,7 +10,7 @@ import {
   setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { ellipse, square, triangle } from 'ionicons/icons';
+import { baseballOutline, podiumOutline } from 'ionicons/icons';
 import DataInput from './pages/DataInput';
 import DataVisual from './pages/DataVisual';
 
@@ -53,11 +53,11 @@ const App: React.FC = () => (
         
         <IonTabBar slot="bottom">
           <IonTabButton tab="DataInput" href="/DataInput">
-            <IonIcon aria-hidden="true" icon={triangle} />
+            <IonIcon aria-hidden="true" icon={baseballOutline} />
             <IonLabel>Data Input</IonLabel>
           </IonTabButton>
           <IonTabButton tab="DataVisual" href="/DataVisual">
-            <IonIcon aria-hidden="true" icon={ellipse} />
+            <IonIcon aria-hidden="true" icon={podiumOutline} />
             <IonLabel>Data Visual</IonLabel>
           </IonTabButton>
         </IonTabBar>
