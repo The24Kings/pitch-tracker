@@ -1,6 +1,5 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
-import './DataInput.css';
+import DataInputContainer from '../components/DataInputContainer';
 
 const DataInput: React.FC = () => {
   return (
@@ -16,7 +15,7 @@ const DataInput: React.FC = () => {
             <IonTitle size="large">Data Input</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <ExploreContainer name="Data Input page" />
+        <DataInputContainer name="Data Input page" />
       </IonContent>
     </IonPage>
   );
