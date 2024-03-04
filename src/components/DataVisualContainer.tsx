@@ -15,7 +15,7 @@ const DataVisualContainer: React.FC<ContainerProps> = ({ name }) => {
   const getTestData = async () => {
     try {
       // Reference to the collection 'test_data'
-      const testCollection = collection(firestore, 'test_data');
+      const testCollection = collection(firestore, 'pitch_type');
 
       // Get all documents in the collection
       const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(testCollection);
@@ -40,11 +40,11 @@ const DataVisualContainer: React.FC<ContainerProps> = ({ name }) => {
   return (
     <IonContent className="DataVisualContainer">
       <IonCard>
-      <IonCardSubtitle>Data Visual Container</IonCardSubtitle>
+      <IonCardSubtitle>Pitch Types</IonCardSubtitle>
       <IonList>
         {/* Loop through testData array and display each item */}
         {testData.map((data, index) => (
-          <IonItem key={index}>Test Data: {data}</IonItem>
+          <IonItem key={index}>Pitch Type: {data}</IonItem>
         ))}
       </IonList>
       </IonCard>

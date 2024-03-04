@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { IonButton, IonAlert } from '@ionic/react';
 import { handleFirstSubmit } from '../handles/handlesubmit';
-import { handleSecondSubmit } from '../handles/handlesubmit';
 
 interface ContainerProps {
   name: string;
@@ -22,7 +21,7 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
 
   const handleSecondAlertSave = async () => {
     console.log("Selected value from second alert:", selectedValue); // Check selected value before submission
-    await handleSecondSubmit(selectedValue); // Wait for the submission to complete
+    await handleFirstSubmit(selectedValue); // Wait for the submission to complete
     setSelectedValue('');
     setShowSecondAlert(false);
   };

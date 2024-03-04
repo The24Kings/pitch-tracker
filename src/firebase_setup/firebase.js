@@ -15,7 +15,21 @@ const firebaseConfig = {
   appId: "1:979367841378:web:3612cbe4649fd22a0a8b3b",
   measurementId: "G-8BJRKZC9ZG"
 };
+const addPlayerToFirebase = async (playerName) => {
+  try {
+    const docRef = await db.collection('users').add({
+      username: playerName,
+      pitchStats: {} // Initialize with empty pitch stats
+    });
+    console.log("Player added with ID: ", docRef.id);
+    return docRef.id;
+  } catch (error) {
+    console.error("Error adding player: ", error);
+    throw error; // You might want to handle this error in your UI
+  }
+};
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const firestore = getFirestore(app);
+export { addPlayerToFirebase };
