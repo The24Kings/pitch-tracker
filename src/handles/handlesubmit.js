@@ -27,3 +27,13 @@ export const handleSecondSubmit = async (testdata) => {
         console.log(err);
     }
 }
+export const handlePlayerSubmit = async (playerName) => {
+    const playersRef = collection(firestore, "players");
+
+    try {
+        await addDoc(playersRef, { name: playerName });
+        console.log("Player added successfully!");
+    } catch(err) {
+        console.error("Error adding player: ", err);
+    }
+}
