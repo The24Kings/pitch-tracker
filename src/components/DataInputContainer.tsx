@@ -13,7 +13,6 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
   const [selectedValue, setSelectedValue] = useState('');
   const [showSecondAlert, setShowSecondAlert] = useState(false);
   const [showPlayerAlert, setShowPlayerAlert] = useState(false); // State for Player Alert
-  const [playerName, setPlayerName] = useState(''); // State for Player Name
 
   const handleSave = async () => {
     console.log("Selected value before submission:", selectedValue); // Check selected value before submission
@@ -30,11 +29,11 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
     setShowSecondAlert(false);
   };
 
-  const handlePlayerAlertSave = async () => {
-    console.log("Player name:", playerName); // Log the player name to see its current value
+  const handlePlayerAlertSave = async (name: String) => {
+    console.log("Player name:", name); // Log the player name to see its current value
   
     // Check if playerName is empty
-    if (!playerName.trim()) {
+    if (!name.trim()) {
       // Display an alert or toast message to inform the user that the player name is required
       // You can use Ionic's AlertController or ToastController for this purpose
       // For simplicity, let's just log an error message to the console
@@ -43,8 +42,7 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
     }
   
     // Call handlePlayerSubmit only if playerName is not empty
-    await handlePlayerSubmit(playerName); // Submit player name to firestore
-    setPlayerName(''); // Clear the player name textbox
+    await handlePlayerSubmit(name); // Submit player name to firestore
     setShowPlayerAlert(false); // Close the player alert
   };
   
@@ -74,7 +72,7 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
             text: 'Save',
             handler: data => {
               console.log("Player name input:", data.playerName);
-              setPlayerName(data.playerName);
+              handlePlayerAlertSave(data.playerName);
             }
           },
         ]}
