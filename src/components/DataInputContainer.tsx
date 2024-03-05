@@ -15,8 +15,6 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
   const [showPlayerAlert, setShowPlayerAlert] = useState(false); // State for Player Alert
   const [playerName, setPlayerName] = useState(''); // State for Player Name
 
-
-
   const handleSave = async () => {
     console.log("Selected value before submission:", selectedValue); // Check selected value before submission
     await handleFirstSubmit(selectedValue); // Wait for the submission to complete
@@ -50,10 +48,7 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
     setShowPlayerAlert(false); // Close the player alert
   };
   
-  
-  
-  return (
-  
+  return ( 
     <>
       <IonButton onClick={() => setShowPlayerAlert(true)}>+Player</IonButton>
       <IonAlert
@@ -64,13 +59,7 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
           {
             name: 'playerName',
             type: 'text',
-            placeholder: 'Enter player name',
-            value: playerName,
-            handler: (input: any) => {
-              if (input && input.detail && input.detail.value) {
-                setPlayerName(input.detail.value);
-              }
-            }
+            placeholder: 'Enter player name'
           },
         ]}
         buttons={[
@@ -83,9 +72,10 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
           },
           {
             text: 'Save',
-            handler: () => {
-              handlePlayerAlertSave();
-            },
+            handler: data => {
+              console.log("Player name input:", data.playerName);
+              setPlayerName(data.playerName);
+            }
           },
         ]}
       />
