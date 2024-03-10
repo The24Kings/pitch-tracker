@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { IonButton, IonAlert, IonContent, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption } from '@ionic/react';
-import { handleFirstSubmit } from '../handles/handlesubmit';
-import { handleSecondSubmit } from '../handles/handlesubmit';
-import { handlePlayerSubmit } from '../handles/handlesubmit';
+import { handleFirstSubmit, handleSecondSubmit, handlePlayerSubmit } from '../handles/handlesubmit';
 import { firestore } from '../firebase_setup/firebase';
-import { collection, getDocs } from '@firebase/firestore'; // Import Firestore functions
+import { collection, getDocs, addDoc } from '@firebase/firestore';
 
 interface ContainerProps {
   name: string;
@@ -16,9 +14,9 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
   const [showSecondAlert, setShowSecondAlert] = useState(false);
   const [showPlayerAlert, setShowPlayerAlert] = useState(false);
   const [players, setPlayers] = useState<string[]>([]);
+  const [selectedPlayer, setSelectedPlayer] = useState('');
 
   useEffect(() => {
-    // Fetch players from Firestore when the component mounts
     const fetchPlayers = async () => {
       const playersCollection = await getDocs(collection(firestore, 'players'));
       const playerNames = playersCollection.docs.map((doc) => doc.data().name);
@@ -29,16 +27,16 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
   }, []);
 
   const handleSave = async () => {
-    console.log("Selected value before submission:", selectedValue);
-    await handleFirstSubmit("Brandon", selectedValue);
+    console.log("Selected player before submission:", selectedPlayer);
+    await handleFirstSubmit(selectedPlayer, selectedValue);
     setSelectedValue('');
     setShowAlert(false);
     setShowSecondAlert(true);
   };
 
   const handleSecondAlertSave = async () => {
-    console.log("Selected value from second alert:", selectedValue);
-    await handleSecondSubmit("Brandon", selectedValue);
+    console.log("Selected player from second alert:", selectedPlayer);
+    await handleSecondSubmit(selectedPlayer, selectedValue);
     setSelectedValue('');
     setShowSecondAlert(false);
   };
@@ -58,13 +56,12 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
   return (
     <IonContent>
       <IonGrid>
-        {/* Player Dropdown and +Player button */}
         <IonRow className="ion-align-items-center ion-justify-content-between">
           <IonCol size="auto">
             <IonSelect
-              value={selectedValue}
+              value={selectedPlayer}
               placeholder="Select Player"
-              onIonChange={(e) => setSelectedValue(e.detail.value)}
+              onIonChange={(e) => setSelectedPlayer(e.detail.value)}
             >
               {players.map((player) => (
                 <IonSelectOption key={player} value={player}>
@@ -77,7 +74,6 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
             <IonButton onClick={() => setShowPlayerAlert(true)}>+Player</IonButton>
           </IonCol>
         </IonRow>
-        {/* Open Alert button */}
         <IonRow className="ion-align-items-center ion-justify-content-center">
           <IonCol size="12" className="ion-text-center">
             <IonButton onClick={() => setShowAlert(true)}>Open Alert</IonButton>
