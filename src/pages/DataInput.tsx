@@ -6,13 +6,11 @@ const DataInput: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Data Input</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">Data Input</IonTitle>
           </IonToolbar>
         </IonHeader>
         <DataInputContainer name="Data Input page" />
