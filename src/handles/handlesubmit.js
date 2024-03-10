@@ -1,4 +1,4 @@
-import { query, where, getDocs, collection, doc, setDoc, increment, addDoc, getDoc } from '@firebase/firestore';
+import { query, where, getDocs, collection, doc, setDoc, increment, addDoc, getDoc, updateDoc } from '@firebase/firestore';
 import { firestore } from '../firebase_setup/firebase';
 
 
@@ -13,22 +13,14 @@ export const handleFirstSubmit = async (playerName, testdata) => {
             // Get the reference to the first document (assuming playerName is unique)
             const playerDocRef = querySnapshot.docs[0].ref;
 
-            // Check if a document exists for the player in the "pitch_data" subcollection
+            // Add a new document with auto-generated ID under the "pitch_data" subcollection
             const pitchDataCollectionRef = collection(playerDocRef, 'pitch_data');
-            const pitchDataQuerySnapshot = await getDocs(pitchDataCollectionRef);
+            const newPitchDocRef = await addDoc(pitchDataCollectionRef, {
+                pitch_type: testdata,
+                pitch_result: null // Initialize pitch_result to null
+            });
 
-            if (!pitchDataQuerySnapshot.empty) {
-                // Get the reference to the existing auto-incremented document
-                const pitchDataDocRef = pitchDataQuerySnapshot.docs[0].ref;
-
-                // Update the existing document with the new pitch type
-                await setDoc(pitchDataDocRef, { pitch_type: testdata }, { merge: true });
-            } else {
-                // Create a new auto-incremented document under the "pitch_data" subcollection
-                await addDoc(pitchDataCollectionRef, { pitch_type: testdata });
-            }
-
-            console.log("Pitch type added successfully for player:", playerName);
+            console.log("Pitch type added successfully for player:", playerName, "Document ID:", newPitchDocRef.id);
         } else {
             console.error(`Player with name "${playerName}" not found.`);
         }
@@ -48,22 +40,15 @@ export const handleSecondSubmit = async (playerName, testdata) => {
             // Get the reference to the first document (assuming playerName is unique)
             const playerDocRef = querySnapshot.docs[0].ref;
 
-            // Check if a document exists for the player in the "pitch_data" subcollection
+            // Get the reference to the last added document under "pitch_data" subcollection
             const pitchDataCollectionRef = collection(playerDocRef, 'pitch_data');
             const pitchDataQuerySnapshot = await getDocs(pitchDataCollectionRef);
+            const lastPitchDocRef = pitchDataQuerySnapshot.docs[pitchDataQuerySnapshot.docs.length - 1].ref;
 
-            if (!pitchDataQuerySnapshot.empty) {
-                // Get the reference to the existing auto-incremented document
-                const pitchDataDocRef = pitchDataQuerySnapshot.docs[0].ref;
+            // Update the existing document with the new pitch result
+            await updateDoc(lastPitchDocRef, { pitch_result: testdata });
 
-                // Update the existing document with the new pitch result
-                await setDoc(pitchDataDocRef, { pitch_result: testdata }, { merge: true });
-            } else {
-                // Create a new auto-incremented document under the "pitch_data" subcollection
-                await addDoc(pitchDataCollectionRef, { pitch_result: testdata });
-            }
-
-            console.log("Pitch result added successfully for player:", playerName);
+            console.log("Pitch result added successfully for player:", playerName, "Document ID:", lastPitchDocRef.id);
         } else {
             console.error(`Player with name "${playerName}" not found.`);
         }
