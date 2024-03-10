@@ -30,7 +30,7 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
 
   const handleSave = async () => {
     console.log("Selected value before submission:", selectedValue);
-    await handleFirstSubmit(selectedValue);
+    await handleFirstSubmit("Brandon", selectedValue);
     setSelectedValue('');
     setShowAlert(false);
     setShowSecondAlert(true);
@@ -38,7 +38,7 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
 
   const handleSecondAlertSave = async () => {
     console.log("Selected value from second alert:", selectedValue);
-    await handleSecondSubmit(selectedValue);
+    await handleSecondSubmit("Brandon", selectedValue);
     setSelectedValue('');
     setShowSecondAlert(false);
   };
