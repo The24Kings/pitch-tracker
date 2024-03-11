@@ -53,33 +53,34 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
     setShowPlayerAlert(false);
   };
 
+  const handleRegionClick = () => {
+    setShowAlert(true);
+  };
+
   return (
-    <IonContent>
-      <IonGrid>
-        <IonRow className="ion-align-items-center ion-justify-content-between">
-          <IonCol size="auto">
-            <IonSelect
-              value={selectedPlayer}
-              placeholder="Select Player"
-              onIonChange={(e) => setSelectedPlayer(e.detail.value)}
-            >
-              {players.map((player) => (
-                <IonSelectOption key={player} value={player}>
-                  {player}
-                </IonSelectOption>
-              ))}
-            </IonSelect>
-          </IonCol>
-          <IonCol size="auto">
-            <IonButton onClick={() => setShowPlayerAlert(true)}>+Player</IonButton>
-          </IonCol>
-        </IonRow>
-        <IonRow className="ion-align-items-center ion-justify-content-center">
-          <IonCol size="12" className="ion-text-center">
-            <IonButton onClick={() => setShowAlert(true)}>Open Alert</IonButton>
-          </IonCol>
-        </IonRow>
-      </IonGrid>
+<IonContent>
+  <IonGrid>
+    <IonRow className="ion-align-items-center ion-justify-content-between">
+      <IonCol size="auto">
+        <IonSelect
+          value={selectedPlayer}
+          placeholder="Select Player"
+          onIonChange={(e) => setSelectedPlayer(e.detail.value)}
+        >
+          {players.map((player) => (
+            <IonSelectOption key={player} value={player}>
+              {player}
+            </IonSelectOption>
+          ))}
+        </IonSelect>
+      </IonCol>
+      <IonCol size="auto">
+        <IonButton onClick={() => setShowPlayerAlert(true)}>+Player</IonButton>
+      </IonCol>
+    </IonRow>
+    {/* Empty div to create clickable region */}
+    <div style={{ height: '450px' }} onClick={handleRegionClick} />
+  </IonGrid>
 
         <IonAlert
           isOpen={showPlayerAlert}
@@ -171,6 +172,14 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
               value: 'Splitter',
               checked: selectedValue === 'Splitter',
               handler: () => setSelectedValue('Splitter')
+            },
+            {
+              name: 'Knuckleball',
+              type: 'radio',
+              label: 'Knuckleball',
+              value: 'Knuckleball',
+              checked: selectedValue === 'Knuckleball',
+              handler: () => setSelectedValue('Knuckleball')
             },
             // Add other radio buttons here
           ]}
