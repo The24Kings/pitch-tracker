@@ -3,7 +3,7 @@ import { IonButton, IonAlert, IonContent, IonGrid, IonRow, IonCol, IonSelect, Io
 import { handleFirstSubmit, handleSecondSubmit, handlePlayerSubmit } from '../handles/handlesubmit';
 import { firestore } from '../firebase_setup/firebase';
 import { collection, getDocs, addDoc } from '@firebase/firestore';
-import binnedStrikeZoneImage from '/Users/brandoncabrera/Desktop/binned_strike_zone.png';
+import binnedStrikeZoneImage from '../../public/binned_strike_zone.png';
 
 
 interface ContainerProps {
