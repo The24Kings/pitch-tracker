@@ -3,6 +3,8 @@ import { IonButton, IonAlert, IonContent, IonGrid, IonRow, IonCol, IonSelect, Io
 import { handleFirstSubmit, handleSecondSubmit, handlePlayerSubmit } from '../handles/handlesubmit';
 import { firestore } from '../firebase_setup/firebase';
 import { collection, getDocs, addDoc } from '@firebase/firestore';
+import binnedStrikeZoneImage from '/Users/brandoncabrera/Desktop/binned_strike_zone.png';
+
 
 interface ContainerProps {
   name: string;
@@ -15,6 +17,7 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
   const [showPlayerAlert, setShowPlayerAlert] = useState(false);
   const [players, setPlayers] = useState<string[]>([]);
   const [selectedPlayer, setSelectedPlayer] = useState('');
+  const [touchCoordinates, setTouchCoordinates] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -28,7 +31,7 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
 
   const handleSave = async () => {
     console.log("Selected player before submission:", selectedPlayer);
-    await handleFirstSubmit(selectedPlayer, selectedValue);
+    await handleFirstSubmit(selectedPlayer, selectedValue, touchCoordinates);
     setSelectedValue('');
     setShowAlert(false);
     setShowSecondAlert(true);
@@ -36,7 +39,7 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
 
   const handleSecondAlertSave = async () => {
     console.log("Selected player from second alert:", selectedPlayer);
-    await handleSecondSubmit(selectedPlayer, selectedValue);
+    await handleSecondSubmit(selectedPlayer, selectedValue, touchCoordinates);
     setSelectedValue('');
     setShowSecondAlert(false);
   };
@@ -53,34 +56,35 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
     setShowPlayerAlert(false);
   };
 
-  const handleRegionClick = () => {
+  const handleRegionClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     setShowAlert(true);
+    const { clientX, clientY } = event;
+    setTouchCoordinates({ x: clientX, y: clientY });
   };
 
   return (
-<IonContent>
-  <IonGrid>
-    <IonRow className="ion-align-items-center ion-justify-content-between">
-      <IonCol size="auto">
-        <IonSelect
-          value={selectedPlayer}
-          placeholder="Select Player"
-          onIonChange={(e) => setSelectedPlayer(e.detail.value)}
-        >
-          {players.map((player) => (
-            <IonSelectOption key={player} value={player}>
-              {player}
-            </IonSelectOption>
-          ))}
-        </IonSelect>
-      </IonCol>
-      <IonCol size="auto">
-        <IonButton onClick={() => setShowPlayerAlert(true)}>+Player</IonButton>
-      </IonCol>
-    </IonRow>
-    {/* Empty div to create clickable region */}
-    <div style={{ height: '450px' }} onClick={handleRegionClick} />
-  </IonGrid>
+    <IonContent>
+      <IonGrid>
+        <IonRow className="ion-align-items-center ion-justify-content-between">
+          <IonCol size="auto">
+            <IonSelect
+              value={selectedPlayer}
+              label="Select Player"
+              onIonChange={(e) => setSelectedPlayer(e.detail.value)}
+            >
+              {players.map((player) => (
+                <IonSelectOption key={player} value={player}>
+                  {player}
+                </IonSelectOption>
+              ))}
+            </IonSelect>
+          </IonCol>
+          <IonCol size="auto">
+            <IonButton onClick={() => setShowPlayerAlert(true)}>+Player</IonButton>
+          </IonCol>
+        </IonRow>
+        <div style={{ flex: 1, height: '400px', backgroundImage: `url(${binnedStrikeZoneImage})`, backgroundSize: 'contain', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={handleRegionClick} />
+      </IonGrid>
 
         <IonAlert
           isOpen={showPlayerAlert}
