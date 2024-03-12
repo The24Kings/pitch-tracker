@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { IonButton, IonAlert, IonContent, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption } from '@ionic/react';
-import { handleFirstSubmit, handleSecondSubmit, handlePlayerSubmit } from '../handles/handlesubmit';
+import { handleSubmit, handlePlayerSubmit } from '../handles/handlesubmit';
 import { firestore } from '../firebase_setup/firebase';
 import { collection, getDocs, addDoc } from '@firebase/firestore';
 import binnedStrikeZoneImage from '../../public/binned_strike_zone.png';
@@ -12,7 +12,8 @@ interface ContainerProps {
 
 const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
   const [showAlert, setShowAlert] = useState(false);
-  const [selectedValue, setSelectedValue] = useState('');
+  const [selectedType, setSelectedType] = useState('');
+  const [selectedResult, setSelectedResult] = useState('');
   const [showSecondAlert, setShowSecondAlert] = useState(false);
   const [showPlayerAlert, setShowPlayerAlert] = useState(false);
   const [players, setPlayers] = useState<string[]>([]);
@@ -31,16 +32,17 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
 
   const handleSave = async () => {
     console.log("Selected player before submission:", selectedPlayer);
-    await handleFirstSubmit(selectedPlayer, selectedValue, touchCoordinates);
-    setSelectedValue('');
+    //await handleFirstSubmit(selectedPlayer, selectedType, touchCoordinates); // Pitch Type
+    //setSelectedType('');
     setShowAlert(false);
     setShowSecondAlert(true);
   };
 
   const handleSecondAlertSave = async () => {
     console.log("Selected player from second alert:", selectedPlayer);
-    await handleSecondSubmit(selectedPlayer, selectedValue, touchCoordinates);
-    setSelectedValue('');
+    await handleSubmit(selectedPlayer, selectedType, selectedResult, touchCoordinates); // Pitch Type and Result
+    setSelectedType('');
+    setSelectedResult('');
     setShowSecondAlert(false);
   };
 
@@ -126,64 +128,64 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
               type: 'radio',
               label: 'Fastball',
               value: 'Fastball',
-              checked: selectedValue === 'Fastball',
-              handler: () => setSelectedValue('Fastball')
+              checked: selectedType === 'Fastball',
+              handler: () => setSelectedType('Fastball')
             },
             {
               name: 'Curveball',
               type: 'radio',
               label: 'Curveball',
               value: 'Curveball',
-              checked: selectedValue === 'Curveball',
-              handler: () => setSelectedValue('Curveball')
+              checked: selectedType === 'Curveball',
+              handler: () => setSelectedType('Curveball')
             },
             {
               name: 'Slider',
               type: 'radio',
               label: 'Slider',
               value: 'Slider',
-              checked: selectedValue === 'Slider',
-              handler: () => setSelectedValue('Slider')
+              checked: selectedType === 'Slider',
+              handler: () => setSelectedType('Slider')
             },
             {
               name: 'Changeup',
               type: 'radio',
               label: 'Changeup',
               value: 'Changeup',
-              checked: selectedValue === 'Changeup',
-              handler: () => setSelectedValue('Changeup')
+              checked: selectedType === 'Changeup',
+              handler: () => setSelectedType('Changeup')
             },
             {
               name: 'Sinker',
               type: 'radio',
               label: 'Sinker',
               value: 'Sinker',
-              checked: selectedValue === 'Sinker',
-              handler: () => setSelectedValue('Sinker')
+              checked: selectedType === 'Sinker',
+              handler: () => setSelectedType('Sinker')
             },
             {
               name: 'Cutter',
               type: 'radio',
               label: 'Cutter',
               value: 'Cutter',
-              checked: selectedValue === 'Cutter',
-              handler: () => setSelectedValue('Cutter')
+              checked: selectedType === 'Cutter',
+              handler: () => setSelectedType('Cutter')
             },
             {
               name: 'Splitter',
               type: 'radio',
               label: 'Splitter',
               value: 'Splitter',
-              checked: selectedValue === 'Splitter',
-              handler: () => setSelectedValue('Splitter')
+              checked: selectedType === 'Splitter',
+              handler: () => setSelectedType('Splitter')
             },
             {
               name: 'Knuckleball',
               type: 'radio',
               label: 'Knuckleball',
               value: 'Knuckleball',
-              checked: selectedValue === 'Knuckleball',
-              handler: () => setSelectedValue('Knuckleball')
+              checked: selectedType === 'Knuckleball',
+              handler: () => setSelectedType('Knuckleball')
             },
             // Add other radio buttons here
           ]}
@@ -215,40 +217,40 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
               type: 'radio',
               label: 'Called Strike',
               value: 'Called Striked',
-              checked: selectedValue === 'Called Strike',
-              handler: () => setSelectedValue('Called Strike')
+              checked: selectedResult === 'Called Strike',
+              handler: () => setSelectedResult('Called Strike')
             },
             {
               name: 'Swinging Strike',
               type: 'radio',
               label: 'Swinging Strike',
               value: 'Swinging Strike',
-              checked: selectedValue === 'Swinging Strike',
-              handler: () => setSelectedValue('Swinging Strike')
+              checked: selectedResult === 'Swinging Strike',
+              handler: () => setSelectedResult('Swinging Strike')
             },
             {
               name: 'Ball',
               type: 'radio',
               label: 'Ball',
               value: 'Ball',
-              checked: selectedValue === 'Ball',
-              handler: () => setSelectedValue('Ball')
+              checked: selectedResult === 'Ball',
+              handler: () => setSelectedResult('Ball')
             },
             {
               name: 'Hit By Pitch',
               type: 'radio',
               label: 'Hit By Pitch',
               value: 'Hit By Pitch',
-              checked: selectedValue === 'Hit By Pitch',
-              handler: () => setSelectedValue('Hit By Pitch')
+              checked: selectedResult === 'Hit By Pitch',
+              handler: () => setSelectedResult('Hit By Pitch')
             },
             {
               name: 'Ball In Play',
               type: 'radio',
               label: 'Ball In Play',
               value: 'Ball In Play',
-              checked: selectedValue === 'Ball In Play',
-              handler: () => setSelectedValue('Ball In Play')
+              checked: selectedResult === 'Ball In Play',
+              handler: () => setSelectedResult('Ball In Play')
             },
             // Add other radio buttons here
           ]}
