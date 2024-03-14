@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { IonIcon } from '@ionic/react';
+import { person } from 'ionicons/icons';
 import { IonButton, IonAlert, IonContent, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption } from '@ionic/react';
 import { handleSubmit, handlePlayerSubmit } from '../handles/handlesubmit';
 import { firestore } from '../firebase_setup/firebase';
 import { collection, getDocs, addDoc } from '@firebase/firestore';
-import binnedStrikeZoneImage from '../../public/binned_strike_zone.png';
+import strikeZoneWhite from '../../public/StrikeZoneWhite.webp';
 
 
 interface ContainerProps {
@@ -60,8 +62,9 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
 
   const handleRegionClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     setShowAlert(true);
-    const { clientX, clientY } = event;
-    setTouchCoordinates({ x: clientX, y: clientY });
+    const { offsetX, offsetY } = event.nativeEvent;
+    const adjustedX = offsetX - 5;
+    setTouchCoordinates({ x: adjustedX, y: offsetY });
   };
 
   return (
@@ -69,6 +72,7 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
       <IonGrid>
         <IonRow className="ion-align-items-center ion-justify-content-between">
           <IonCol size="auto">
+            <IonIcon icon={person}></IonIcon>
             <IonSelect
               value={selectedPlayer}
               label="Select Player"
@@ -85,7 +89,7 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
             <IonButton onClick={() => setShowPlayerAlert(true)}>+Player</IonButton>
           </IonCol>
         </IonRow>
-        <div style={{ flex: 1, height: '400px', backgroundImage: `url(${binnedStrikeZoneImage})`, backgroundSize: 'contain', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={handleRegionClick} />
+        <div style={{ flex: 1, width: '343px', height: '353.81px', backgroundImage: `url(${strikeZoneWhite})`, backgroundSize: 'contain', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={handleRegionClick} />
       </IonGrid>
 
         <IonAlert

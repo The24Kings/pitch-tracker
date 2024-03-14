@@ -22,3 +22,50 @@
 .container a {
   text-decoration: none;
 }
+.strike-zone-container {
+  position: relative;
+  width: 100%;
+  height: auto;
+  max-width: 400px; /* Adjust the max-width as needed */
+  margin: 0 auto;
+}
+
+.strike-zone-image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.pitch-circle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.Fastball {
+  background-color: red; 
+}
+
+.Curveball {
+  background-color: blue;
+}
+
+.Slider {
+  background-color: green;
+}
+.Changeup {
+  background-color: orange;
+}
+.Sinker {
+  background-color: lightblue;
+}
+.Cutter {
+  background-color: yellow;
+}
+.Splitter {
+  background-color: pink;
+}
+.Knuckleball {
+  background-color: purple;
+}
