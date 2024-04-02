@@ -1,15 +1,19 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { 
+  IonContent, 
+  IonHeader, 
+  IonPage, 
+  IonTitle, 
+  IonToolbar,
+  IonButtons,
+  IonMenuButton
+} from '@ionic/react';
 import DataInputContainer from '../components/DataInputContainer';
 
 const DataInput: React.FC = () => {
   return (
     <IonPage>
-      <IonHeader>
-      </IonHeader>
       <IonContent fullscreen>
         <IonHeader collapse="condense">
-          <IonToolbar>
-          </IonToolbar>
         </IonHeader>
         <DataInputContainer name="Data Input page" />
       </IonContent>

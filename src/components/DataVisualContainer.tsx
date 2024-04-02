@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { IonCard, IonCardSubtitle, IonContent, IonToolbar, IonSelect, IonSelectOption } from '@ionic/react';
+import { IonCard, IonCardSubtitle, IonContent, IonToolbar, IonSelect, IonSelectOption, IonRow, IonGrid, IonCol } from '@ionic/react';
 import { IonIcon } from '@ionic/react';
 import { person } from 'ionicons/icons';
 import { collection, getDocs, query, where, QuerySnapshot, DocumentData } from 'firebase/firestore'; // Added Firestore imports
@@ -59,7 +59,6 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
     }
   };
   
-
   useEffect(() => {
     fetchPlayers(); // Fetch players when component mounts
   }, []);
@@ -73,22 +72,31 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
   return (
     <IonContent className="DataVisualContainer">
       <IonCard>
-        <IonCardSubtitle>Pitch Data</IonCardSubtitle>
         <IonToolbar>
-          <IonIcon icon={person}></IonIcon>
-          <IonSelect
-            value={selectedPlayer}
-            placeholder="Select Player"
-            onIonChange={(e) => setSelectedPlayer(e.detail.value)}
-          >
-            {players.map((player) => (
-              <IonSelectOption key={player} value={player}>
-                {player}
-              </IonSelectOption>
-            ))}
-          </IonSelect>
+          <IonGrid>
+            <IonRow className="ion-align-items-center">
+              <IonCol size="auto">
+                <IonIcon icon={person}></IonIcon>
+              </IonCol>
+              <IonCol size="auto">
+                <IonSelect
+                  value={selectedPlayer}
+                  label="Select Player"
+                  onIonChange={(e) => setSelectedPlayer(e.detail.value)}
+                >
+                  {players.map((player) => (
+                    <IonSelectOption key={player} value={player}>
+                      {player}
+                    </IonSelectOption>
+                  ))}
+                </IonSelect>
+              </IonCol>
+            </IonRow>
+          </IonGrid>
         </IonToolbar>
-        <div className="strike-zone-container">
+      </IonCard>
+
+      <div className="strike-zone-container">
           <img src={strikeZoneWhite} alt="Strike Zone" className="strike-zone-image" />
           {/* Map over pitchData array and render circles for each pitch */}
           {pitchData.map((data, index) => (
@@ -107,7 +115,6 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
             </div>
           )}
         </div>
-      </IonCard>
     </IonContent>
   );
 };

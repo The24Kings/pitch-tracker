@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { IonIcon } from '@ionic/react';
 import { person } from 'ionicons/icons';
-import { IonButton, IonAlert, IonContent, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption } from '@ionic/react';
+import { IonButton, IonAlert, IonContent, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption, IonCard, IonToolbar } from '@ionic/react';
 import { handleSubmit, handlePlayerSubmit } from '../handles/handlesubmit';
 import { firestore } from '../firebase_setup/firebase';
 import { collection, getDocs, addDoc } from '@firebase/firestore';
@@ -69,213 +69,220 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
 
   return (
     <IonContent>
-      <IonGrid>
-        <IonRow className="ion-align-items-center ion-justify-content-between">
-          <IonCol size="auto">
-            <IonIcon icon={person}></IonIcon>
-            <IonSelect
-              value={selectedPlayer}
-              label="Select Player"
-              onIonChange={(e) => setSelectedPlayer(e.detail.value)}
-            >
-              {players.map((player) => (
-                <IonSelectOption key={player} value={player}>
-                  {player}
-                </IonSelectOption>
-              ))}
-            </IonSelect>
-          </IonCol>
-          <IonCol size="auto">
-            <IonButton onClick={() => setShowPlayerAlert(true)}>+Player</IonButton>
-          </IonCol>
-        </IonRow>
-        <div style={{ flex: 1, width: '343px', height: '353.81px', backgroundImage: `url(${strikeZoneWhite})`, backgroundSize: 'contain', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={handleRegionClick} />
-      </IonGrid>
+      <IonCard>
+        <IonToolbar>
+          <IonGrid>
+            <IonRow className="ion-align-items-center ion-justify-content-between">
+              <IonCol size="auto">
+                <IonIcon icon={person} />
+              </IonCol>
+              <IonCol size="auto">
+                <IonSelect
+                  value={selectedPlayer}
+                  label="Select Player"
+                  onIonChange={(e) => setSelectedPlayer(e.detail.value)}
+                >
+                  {players.map((player) => (
+                    <IonSelectOption key={player} value={player}>
+                      {player}
+                    </IonSelectOption>
+                  ))}
+                </IonSelect>
+              </IonCol>
+              <IonCol size="auto">
+                <IonButton onClick={() => setShowPlayerAlert(true)}>+ Player</IonButton>
+              </IonCol>
+            </IonRow>
+          </IonGrid>
+        </IonToolbar>
+      </IonCard>
 
-        <IonAlert
-          isOpen={showPlayerAlert}
-          onDidDismiss={() => setShowPlayerAlert(false)}
-          header={'Add Player'}
-          inputs={[
-            {
-              name: 'playerName',
-              type: 'text',
-              placeholder: 'Enter player name'
-            },
-          ]}
-          buttons={[
-            {
-              text: 'Cancel',
-              role: 'cancel',
-              handler: () => {
-                setShowPlayerAlert(false);
-              },
-            },
-            {
-              text: 'Save',
-              handler: data => {
-                console.log("Player name input:", data.playerName);
-                handlePlayerAlertSave(data.playerName);
-              }
-            },
-          ]}
-        />
+      <div style={{ flex: 1, width: '343px', height: '353.81px', backgroundImage: `url(${strikeZoneWhite})`, backgroundSize: 'contain', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={handleRegionClick} />
 
-        <IonAlert
-          isOpen={showAlert}
-          onDidDismiss={() => setShowAlert(false)}
-          header={'Pitch Type'}
-          message={'Select a pitch type:'}
-          inputs={[
-            {
-              name: 'Fastball',
-              type: 'radio',
-              label: 'Fastball',
-              value: 'Fastball',
-              checked: selectedType === 'Fastball',
-              handler: () => setSelectedType('Fastball')
+      <IonAlert
+        isOpen={showPlayerAlert}
+        onDidDismiss={() => setShowPlayerAlert(false)}
+        header={'Add Player'}
+        inputs={[
+          {
+            name: 'playerName',
+            type: 'text',
+            placeholder: 'Enter player name'
+          },
+        ]}
+        buttons={[
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            handler: () => {
+              setShowPlayerAlert(false);
             },
-            {
-              name: 'Curveball',
-              type: 'radio',
-              label: 'Curveball',
-              value: 'Curveball',
-              checked: selectedType === 'Curveball',
-              handler: () => setSelectedType('Curveball')
-            },
-            {
-              name: 'Slider',
-              type: 'radio',
-              label: 'Slider',
-              value: 'Slider',
-              checked: selectedType === 'Slider',
-              handler: () => setSelectedType('Slider')
-            },
-            {
-              name: 'Changeup',
-              type: 'radio',
-              label: 'Changeup',
-              value: 'Changeup',
-              checked: selectedType === 'Changeup',
-              handler: () => setSelectedType('Changeup')
-            },
-            {
-              name: 'Sinker',
-              type: 'radio',
-              label: 'Sinker',
-              value: 'Sinker',
-              checked: selectedType === 'Sinker',
-              handler: () => setSelectedType('Sinker')
-            },
-            {
-              name: 'Cutter',
-              type: 'radio',
-              label: 'Cutter',
-              value: 'Cutter',
-              checked: selectedType === 'Cutter',
-              handler: () => setSelectedType('Cutter')
-            },
-            {
-              name: 'Splitter',
-              type: 'radio',
-              label: 'Splitter',
-              value: 'Splitter',
-              checked: selectedType === 'Splitter',
-              handler: () => setSelectedType('Splitter')
-            },
-            {
-              name: 'Knuckleball',
-              type: 'radio',
-              label: 'Knuckleball',
-              value: 'Knuckleball',
-              checked: selectedType === 'Knuckleball',
-              handler: () => setSelectedType('Knuckleball')
-            },
-            // Add other radio buttons here
-          ]}
-          buttons={[
-            {
-              text: 'Cancel',
-              role: 'cancel',
-              handler: () => {
-                setShowAlert(false);
-              },
-            },
-            {
-              text: 'Save',
-              handler: () => {
-                handleSave();
-              },
-            },
-          ]}
-        />
+          },
+          {
+            text: 'Save',
+            handler: data => {
+              console.log("Player name input:", data.playerName);
+              handlePlayerAlertSave(data.playerName);
+            }
+          },
+        ]}
+      />
 
-        <IonAlert
-          isOpen={showSecondAlert}
-          onDidDismiss={() => setShowSecondAlert(false)}
-          header={'Pitch Result'}
-          message={'Select the result of the pitch:'}
-          inputs={[
-            {
-              name: 'Called Strike',
-              type: 'radio',
-              label: 'Called Strike',
-              value: 'Called Striked',
-              checked: selectedResult === 'Called Strike',
-              handler: () => setSelectedResult('Called Strike')
+      <IonAlert
+        isOpen={showAlert}
+        onDidDismiss={() => setShowAlert(false)}
+        header={'Pitch Type'}
+        message={'Select a pitch type:'}
+        inputs={[
+          {
+            name: 'Fastball',
+            type: 'radio',
+            label: 'Fastball',
+            value: 'Fastball',
+            checked: selectedType === 'Fastball',
+            handler: () => setSelectedType('Fastball')
+          },
+          {
+            name: 'Curveball',
+            type: 'radio',
+            label: 'Curveball',
+            value: 'Curveball',
+            checked: selectedType === 'Curveball',
+            handler: () => setSelectedType('Curveball')
+          },
+          {
+            name: 'Slider',
+            type: 'radio',
+            label: 'Slider',
+            value: 'Slider',
+            checked: selectedType === 'Slider',
+            handler: () => setSelectedType('Slider')
+          },
+          {
+            name: 'Changeup',
+            type: 'radio',
+            label: 'Changeup',
+            value: 'Changeup',
+            checked: selectedType === 'Changeup',
+            handler: () => setSelectedType('Changeup')
+          },
+          {
+            name: 'Sinker',
+            type: 'radio',
+            label: 'Sinker',
+            value: 'Sinker',
+            checked: selectedType === 'Sinker',
+            handler: () => setSelectedType('Sinker')
+          },
+          {
+            name: 'Cutter',
+            type: 'radio',
+            label: 'Cutter',
+            value: 'Cutter',
+            checked: selectedType === 'Cutter',
+            handler: () => setSelectedType('Cutter')
+          },
+          {
+            name: 'Splitter',
+            type: 'radio',
+            label: 'Splitter',
+            value: 'Splitter',
+            checked: selectedType === 'Splitter',
+            handler: () => setSelectedType('Splitter')
+          },
+          {
+            name: 'Knuckleball',
+            type: 'radio',
+            label: 'Knuckleball',
+            value: 'Knuckleball',
+            checked: selectedType === 'Knuckleball',
+            handler: () => setSelectedType('Knuckleball')
+          },
+          // Add other radio buttons here
+        ]}
+        buttons={[
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            handler: () => {
+              setShowAlert(false);
             },
-            {
-              name: 'Swinging Strike',
-              type: 'radio',
-              label: 'Swinging Strike',
-              value: 'Swinging Strike',
-              checked: selectedResult === 'Swinging Strike',
-              handler: () => setSelectedResult('Swinging Strike')
+          },
+          {
+            text: 'Save',
+            handler: () => {
+              handleSave();
             },
-            {
-              name: 'Ball',
-              type: 'radio',
-              label: 'Ball',
-              value: 'Ball',
-              checked: selectedResult === 'Ball',
-              handler: () => setSelectedResult('Ball')
-            },
-            {
-              name: 'Hit By Pitch',
-              type: 'radio',
-              label: 'Hit By Pitch',
-              value: 'Hit By Pitch',
-              checked: selectedResult === 'Hit By Pitch',
-              handler: () => setSelectedResult('Hit By Pitch')
-            },
-            {
-              name: 'Ball In Play',
-              type: 'radio',
-              label: 'Ball In Play',
-              value: 'Ball In Play',
-              checked: selectedResult === 'Ball In Play',
-              handler: () => setSelectedResult('Ball In Play')
-            },
-            // Add other radio buttons here
-          ]}
-          buttons={[
-            {
-              text: 'Cancel',
-              role: 'cancel',
-              handler: () => {
-                setShowAlert(false);
-              },
-            },
-            {
-              text: 'Save',
-              handler: () => {
-                handleSecondAlertSave();
-              },
-            },
-          ]}
-        />
-      </IonContent>
-    );
-  };
+          },
+        ]}
+      />
 
-  export default DataInputContainer;
+      <IonAlert
+        isOpen={showSecondAlert}
+        onDidDismiss={() => setShowSecondAlert(false)}
+        header={'Pitch Result'}
+        message={'Select the result of the pitch:'}
+        inputs={[
+          {
+            name: 'Called Strike',
+            type: 'radio',
+            label: 'Called Strike',
+            value: 'Called Striked',
+            checked: selectedResult === 'Called Strike',
+            handler: () => setSelectedResult('Called Strike')
+          },
+          {
+            name: 'Swinging Strike',
+            type: 'radio',
+            label: 'Swinging Strike',
+            value: 'Swinging Strike',
+            checked: selectedResult === 'Swinging Strike',
+            handler: () => setSelectedResult('Swinging Strike')
+          },
+          {
+            name: 'Ball',
+            type: 'radio',
+            label: 'Ball',
+            value: 'Ball',
+            checked: selectedResult === 'Ball',
+            handler: () => setSelectedResult('Ball')
+          },
+          {
+            name: 'Hit By Pitch',
+            type: 'radio',
+            label: 'Hit By Pitch',
+            value: 'Hit By Pitch',
+            checked: selectedResult === 'Hit By Pitch',
+            handler: () => setSelectedResult('Hit By Pitch')
+          },
+          {
+            name: 'Ball In Play',
+            type: 'radio',
+            label: 'Ball In Play',
+            value: 'Ball In Play',
+            checked: selectedResult === 'Ball In Play',
+            handler: () => setSelectedResult('Ball In Play')
+          },
+          // Add other radio buttons here
+        ]}
+        buttons={[
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            handler: () => {
+              setShowAlert(false);
+            },
+          },
+          {
+            text: 'Save',
+            handler: () => {
+              handleSecondAlertSave();
+            },
+          },
+        ]}
+      />
+    </IonContent>
+  );
+};
+
+export default DataInputContainer;
