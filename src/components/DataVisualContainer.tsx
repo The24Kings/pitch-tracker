@@ -74,7 +74,7 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
       <IonCard>
         <IonToolbar>
           <IonGrid>
-            <IonRow className="ion-align-items-center">
+            <IonRow className="ion-align-items-center ion-justify-content-between">
               <IonCol size="auto">
                 <IonIcon icon={person}></IonIcon>
               </IonCol>

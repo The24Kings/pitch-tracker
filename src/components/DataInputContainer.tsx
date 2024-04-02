@@ -97,8 +97,10 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
         </IonToolbar>
       </IonCard>
 
-      <div style={{ flex: 1, width: '343px', height: '353.81px', backgroundImage: `url(${strikeZoneWhite})`, backgroundSize: 'contain', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={handleRegionClick} />
-
+      <div className="strike-zone-container" onClick={handleRegionClick}>
+        <img src={strikeZoneWhite} alt="Strike Zone" className="strike-zone-image" />
+      </div>
+      
       <IonAlert
         isOpen={showPlayerAlert}
         onDidDismiss={() => setShowPlayerAlert(false)}
