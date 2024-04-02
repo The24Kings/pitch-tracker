@@ -1,0 +1,26 @@
+.strike-zone-container {
+    flex: 1;
+    width: 343px;
+    height: 353.81px;
+    background-size: contain;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Media query for iPhone */
+  @media (max-width: 767px) {
+    .strike-zone-container {
+      width: 100vw; /* Full width of the screen */
+      height: 50vh; /* Half of the screen height */
+    }
+  }
+  
+  /* Media query for iPad */
+  @media (min-width: 768px) {
+    .strike-zone-container {
+      width: 60vw; /* 60% of the screen width */
+      height: 60vh; /* 60% of the screen height */
+    }
+  }
