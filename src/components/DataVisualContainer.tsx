@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { IonCard, IonCardSubtitle, IonContent, IonToolbar, IonSelect, IonSelectOption, IonRow, IonGrid, IonCol } from '@ionic/react';
+import { IonCard, IonContent, IonToolbar, IonSelect, IonSelectOption, IonRow, IonGrid, IonCol, IonAlert, IonButton } from '@ionic/react';
 import { IonIcon } from '@ionic/react';
 import { person } from 'ionicons/icons';
+import { handlePlayerSubmit } from '../handles/handlesubmit';
 import { collection, getDocs, query, where, QuerySnapshot, DocumentData } from 'firebase/firestore'; // Added Firestore imports
 import './DataVisualContainer.css';
 import strikeZoneWhite from '../../public/StrikeZoneWhite.webp';
@@ -12,6 +13,19 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
   const [selectedPlayer, setSelectedPlayer] = useState<string>('');
   const [players, setPlayers] = useState<string[]>([]);
   const [selectedPitch, setSelectedPitch] = useState<{ pitch_type: string; pitch_result: string } | null>(null);
+  const [showPlayerAlert, setShowPlayerAlert] = useState(false);
+  
+  const handlePlayerAlertSave = async (name: string) => {
+    console.log("Player name:", name);
+
+    if (!name.trim()) {
+      console.error("Player name is required!");
+      return;
+    }
+
+    await handlePlayerSubmit(name);
+    setShowPlayerAlert(false);
+  };
 
   // Function to fetch players from Firestore
   const fetchPlayers = async () => {
@@ -63,6 +77,7 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
     fetchPlayers(); // Fetch players when component mounts
   }, []);
 
+  //TODO: Call getPitchData when the tab is selected so it updates the pitch data after adding new data in the data input tab
   useEffect(() => {
     if (selectedPlayer) {
       getPitchData(); // Call getPitchData only when selectedPlayer is not empty
@@ -74,14 +89,14 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
       <IonCard>
         <IonToolbar>
           <IonGrid>
-            <IonRow className="ion-align-items-center ion-justify-content-between">
+            <IonRow className="ion-align-items-center ion-justify-content-around">
               <IonCol size="auto">
                 <IonIcon icon={person}></IonIcon>
               </IonCol>
               <IonCol size="auto">
                 <IonSelect
                   value={selectedPlayer}
-                  label="Select Player"
+                  placeholder="Select Player"
                   onIonChange={(e) => setSelectedPlayer(e.detail.value)}
                 >
                   {players.map((player) => (
@@ -91,10 +106,42 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
                   ))}
                 </IonSelect>
               </IonCol>
+              <IonCol size="auto">
+                <IonButton onClick={() => setShowPlayerAlert(true)}>+ Player</IonButton>
+              </IonCol>
             </IonRow>
           </IonGrid>
         </IonToolbar>
       </IonCard>
+
+      <IonAlert
+        isOpen={showPlayerAlert}
+        onDidDismiss={() => setShowPlayerAlert(false)}
+        header={'Add Player'}
+        inputs={[
+          {
+            name: 'playerName',
+            type: 'text',
+            placeholder: 'Enter player name'
+          },
+        ]}
+        buttons={[
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            handler: () => {
+              setShowPlayerAlert(false);
+            },
+          },
+          {
+            text: 'Save',
+            handler: data => {
+              console.log("Player name input:", data.playerName);
+              handlePlayerAlertSave(data.playerName);
+            }
+          },
+        ]}
+      />
 
       <div className="strike-zone-container">
           <img src={strikeZoneWhite} alt="Strike Zone" className="strike-zone-image" />

@@ -4,9 +4,8 @@ import { person } from 'ionicons/icons';
 import { IonButton, IonAlert, IonContent, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption, IonCard, IonToolbar } from '@ionic/react';
 import { handleSubmit, handlePlayerSubmit } from '../handles/handlesubmit';
 import { firestore } from '../firebase_setup/firebase';
-import { collection, getDocs, addDoc } from '@firebase/firestore';
+import { collection, getDocs } from '@firebase/firestore';
 import strikeZoneWhite from '../../public/StrikeZoneWhite.webp';
-
 
 interface ContainerProps {
   name: string;
@@ -66,20 +65,21 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
     const adjustedX = offsetX - 5;
     setTouchCoordinates({ x: adjustedX, y: offsetY });
   };
-
+  
+  //FIXME: The IonSelectOption for player name input is not centered
   return (
     <IonContent>
       <IonCard>
         <IonToolbar>
           <IonGrid>
-            <IonRow className="ion-align-items-center ion-justify-content-between">
+            <IonRow className="ion-align-items-center ion-justify-content-around">
               <IonCol size="auto">
                 <IonIcon icon={person} />
               </IonCol>
               <IonCol size="auto">
                 <IonSelect
                   value={selectedPlayer}
-                  label="Select Player"
+                  placeholder="Select Player"
                   onIonChange={(e) => setSelectedPlayer(e.detail.value)}
                 >
                   {players.map((player) => (
