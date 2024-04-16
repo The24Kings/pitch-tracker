@@ -109,7 +109,7 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
         </IonToolbar>
       </IonCard>
 
-      <div className="strike-zone-container" onClick={handleRegionClick}>
+      <div className="strike-zone-container" onClick={selectedPlayer ? handleRegionClick : undefined}>
         <img src={strikeZoneImage} alt="Strike Zone" className="strike-zone-image" />
       </div>
       
