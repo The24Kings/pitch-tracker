@@ -3,11 +3,11 @@ import { IonCard, IonContent, IonToolbar, IonSelect, IonSelectOption, IonRow, Io
 import { IonIcon } from '@ionic/react';
 import { person } from 'ionicons/icons';
 import { handlePlayerSubmit } from '../handles/handlesubmit';
-import { collection, getDocs, query, where, QuerySnapshot, DocumentData } from 'firebase/firestore'; // Added Firestore imports
+import { collection, getDocs, query, where, QuerySnapshot, DocumentData } from 'firebase/firestore';
 import './DataVisualContainer.css';
 import strikeZoneWhite from '../../public/StrikeZoneWhite.webp';
 import strikeZone from '../../public/StrikeZone.png';
-import { firestore } from '../firebase_setup/firebase'; // Import firestore from your Firebase setup file
+import { firestore } from '../firebase_setup/firebase';
 import { useIonViewWillEnter } from '@ionic/react';
 
 const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
@@ -18,10 +18,7 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
   const [showPlayerAlert, setShowPlayerAlert] = useState(false);
   const [strikeZoneImage, setStrikeZoneImage] = useState('');
 
-  
   const handlePlayerAlertSave = async (name: string) => {
-    console.log("Player name:", name);
-
     if (!name.trim()) {
       console.error("Player name is required!");
       return;
@@ -67,7 +64,6 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
       pitchDataQuerySnapshot.forEach((doc) => {
         const { pitch_type, pitch_result, touch_coordinates } = doc.data();
         const { x, y } = touch_coordinates; // Access x and y coordinates from touch_coordinates field
-        console.log(`Pitch Type: ${pitch_type}, Pitch Result: ${pitch_result}, X: ${x}, Y: ${y}`);
         data.push({ pitch_type, pitch_result, x, y });
       });
   
@@ -76,17 +72,24 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
       console.error('Error getting documents:', error);
     }
   };
-  
+
   useEffect(() => {
     fetchPlayers(); // Fetch players when component mounts
   }, []);
 
-  //TODO: Call getPitchData when the tab is selected so it updates the pitch data after adding new data in the data input tab
   useEffect(() => {
     if (selectedPlayer) {
-      getPitchData(); // Call getPitchData only when selectedPlayer is not empty
+      getPitchData(); // Call getPitchData immediately when a player is selected
     }
-  }, [selectedPlayer]); // Call useEffect when selectedPlayer changes
+  
+    const intervalId = setInterval(() => {
+      if (selectedPlayer) {
+        getPitchData(); // Call getPitchData every 1 second after the initial fetch
+      }
+    }, 1000); // Interval duration set to 1000 milliseconds (1 second)
+  
+    return () => clearInterval(intervalId); // Clear the interval when the component unmounts or selectedPlayer changes
+  }, [selectedPlayer]);
 
   useIonViewWillEnter(() => {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
