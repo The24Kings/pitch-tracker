@@ -174,7 +174,47 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
               <p>{`Pitch Result: ${selectedPitch.pitch_result}`}</p>
             </div>
           )}
-        </div>
+      </div>
+
+        {/* Legend container */}
+        <div className="legend-container">
+  <h2>Legend</h2>
+  <div className="legend-grid">
+    <div className="legend-item">
+      <div className="legend-color Fastball"></div>
+      <p>Fastball</p>
+    </div>
+    <div className="legend-item">
+      <div className="legend-color Curveball"></div>
+      <p>Curveball</p>
+    </div>
+    <div className="legend-item">
+      <div className="legend-color Slider"></div>
+      <p>Slider</p>
+    </div>
+    <div className="legend-item">
+      <div className="legend-color Changeup"></div>
+      <p>Changeup</p>
+    </div>
+    <div className="legend-item">
+      <div className="legend-color Sinker"></div>
+      <p>Sinker</p>
+    </div>
+    <div className="legend-item">
+      <div className="legend-color Cutter"></div>
+      <p>Cutter</p>
+    </div>
+    <div className="legend-item">
+      <div className="legend-color Splitter"></div>
+      <p>Splitter</p>
+    </div>
+    <div className="legend-item">
+      <div className="legend-color Knuckleball"></div>
+      <p>Knuckleball</p>
+    </div>
+  </div>
+</div>
+
     </IonContent>
   );
 };

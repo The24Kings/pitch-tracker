@@ -43,6 +43,25 @@
   border-radius: 50%;
 }
 
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 columns */
+  grid-template-rows: repeat(2, auto); /* 2 rows */
+  gap: 10px; /* Adjust the gap between items */
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
 .Fastball {
   background-color: red; 
 }
