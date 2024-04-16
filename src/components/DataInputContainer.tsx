@@ -5,7 +5,9 @@ import { IonButton, IonAlert, IonContent, IonGrid, IonRow, IonCol, IonSelect, Io
 import { handleSubmit, handlePlayerSubmit } from '../handles/handlesubmit';
 import { firestore } from '../firebase_setup/firebase';
 import { collection, getDocs } from '@firebase/firestore';
+import { useIonViewWillEnter } from '@ionic/react';
 import strikeZoneWhite from '../../public/StrikeZoneWhite.webp';
+import strikeZone from '../../public/StrikeZone.png';
 
 interface ContainerProps {
   name: string;
@@ -20,6 +22,7 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
   const [players, setPlayers] = useState<string[]>([]);
   const [selectedPlayer, setSelectedPlayer] = useState('');
   const [touchCoordinates, setTouchCoordinates] = useState({ x: 0, y: 0 });
+  const [strikeZoneImage, setStrikeZoneImage] = useState('');
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -65,6 +68,15 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
     const adjustedX = offsetX - 5;
     setTouchCoordinates({ x: adjustedX, y: offsetY });
   };
+
+  useIonViewWillEnter(() => {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (prefersDark) {
+      setStrikeZoneImage(strikeZoneWhite); // Image for dark mode
+    } else {
+      setStrikeZoneImage(strikeZone); // Image for light mode
+    }
+  });
   
   //FIXME: The IonSelectOption for player name input is not centered
   return (
@@ -98,7 +110,7 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
       </IonCard>
 
       <div className="strike-zone-container" onClick={handleRegionClick}>
-        <img src={strikeZoneWhite} alt="Strike Zone" className="strike-zone-image" />
+        <img src={strikeZoneImage} alt="Strike Zone" className="strike-zone-image" />
       </div>
       
       <IonAlert

@@ -6,7 +6,9 @@ import { handlePlayerSubmit } from '../handles/handlesubmit';
 import { collection, getDocs, query, where, QuerySnapshot, DocumentData } from 'firebase/firestore'; // Added Firestore imports
 import './DataVisualContainer.css';
 import strikeZoneWhite from '../../public/StrikeZoneWhite.webp';
+import strikeZone from '../../public/StrikeZone.png';
 import { firestore } from '../firebase_setup/firebase'; // Import firestore from your Firebase setup file
+import { useIonViewWillEnter } from '@ionic/react';
 
 const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
   const [pitchData, setPitchData] = useState<{ pitch_type: string; pitch_result: string; x: number; y: number }[]>([]);
@@ -14,6 +16,8 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
   const [players, setPlayers] = useState<string[]>([]);
   const [selectedPitch, setSelectedPitch] = useState<{ pitch_type: string; pitch_result: string } | null>(null);
   const [showPlayerAlert, setShowPlayerAlert] = useState(false);
+  const [strikeZoneImage, setStrikeZoneImage] = useState('');
+
   
   const handlePlayerAlertSave = async (name: string) => {
     console.log("Player name:", name);
@@ -84,6 +88,15 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
     }
   }, [selectedPlayer]); // Call useEffect when selectedPlayer changes
 
+  useIonViewWillEnter(() => {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (prefersDark) {
+      setStrikeZoneImage(strikeZoneWhite); // Image for dark mode
+    } else {
+      setStrikeZoneImage(strikeZone); // Image for light mode
+    }
+  });
+
   return (
     <IonContent className="DataVisualContainer">
       <IonCard>
@@ -144,7 +157,7 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
       />
 
       <div className="strike-zone-container">
-          <img src={strikeZoneWhite} alt="Strike Zone" className="strike-zone-image" />
+          <img src={strikeZoneImage} alt="Strike Zone" className="strike-zone-image" />
           {/* Map over pitchData array and render circles for each pitch */}
           {pitchData.map((data, index) => (
             <div 
