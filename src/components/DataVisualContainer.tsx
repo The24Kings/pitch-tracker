@@ -1,5 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { IonCard, IonContent, IonToolbar, IonSelect, IonSelectOption, IonRow, IonGrid, IonCol, IonAlert, IonButton } from '@ionic/react';
+import { 
+  IonCard, 
+  IonContent, 
+  IonToolbar, 
+  IonSelect, 
+  IonSelectOption, 
+  IonRow, 
+  IonGrid, 
+  IonCol, 
+  IonAlert, 
+  IonButton, 
+  IonCardTitle, 
+  IonCardSubtitle,
+  IonList,
+  IonItem,
+  IonThumbnail,
+  IonLabel,
+  IonCardContent,
+  IonCardHeader
+} from '@ionic/react';
 import { IonIcon } from '@ionic/react';
 import { person } from 'ionicons/icons';
 import { handlePlayerSubmit } from '../handles/handlesubmit';
@@ -179,45 +198,68 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
           )}
       </div>
 
-        {/* Legend container */}
-        <div className="legend-container">
-  <h2>Legend</h2>
-  <div className="legend-grid">
-    <div className="legend-item">
-      <div className="legend-color Fastball"></div>
-      <p>Fastball</p>
-    </div>
-    <div className="legend-item">
-      <div className="legend-color Curveball"></div>
-      <p>Curveball</p>
-    </div>
-    <div className="legend-item">
-      <div className="legend-color Slider"></div>
-      <p>Slider</p>
-    </div>
-    <div className="legend-item">
-      <div className="legend-color Changeup"></div>
-      <p>Changeup</p>
-    </div>
-    <div className="legend-item">
-      <div className="legend-color Sinker"></div>
-      <p>Sinker</p>
-    </div>
-    <div className="legend-item">
-      <div className="legend-color Cutter"></div>
-      <p>Cutter</p>
-    </div>
-    <div className="legend-item">
-      <div className="legend-color Splitter"></div>
-      <p>Splitter</p>
-    </div>
-    <div className="legend-item">
-      <div className="legend-color Knuckleball"></div>
-      <p>Knuckleball</p>
-    </div>
-  </div>
-</div>
+      {/* Legend container */}
+      <div className="legend-container">
+        <IonCard>
+          <IonCardHeader>
+            <IonCardTitle>Pitch Type</IonCardTitle>
+            <IonCardSubtitle>Legend</IonCardSubtitle>
+          </IonCardHeader>
 
+          <IonCardContent>
+            <IonList>
+              <IonItem>
+                <IonThumbnail slot="start">
+                  <div className="legend-color Fastball"></div>
+                </IonThumbnail>
+                <IonLabel>FastBall</IonLabel>
+              </IonItem>
+              <IonItem>
+                <IonThumbnail slot="start">
+                  <div className="legend-color Changeup"></div>
+                </IonThumbnail>
+                <IonLabel>Changeup</IonLabel>
+              </IonItem>
+              <IonItem>
+                <IonThumbnail slot="start">
+                  <div className="legend-color Cutter"></div>
+                </IonThumbnail>
+                <IonLabel>Cutter</IonLabel>
+              </IonItem>
+              <IonItem>
+                <IonThumbnail slot="start">
+                  <div className="legend-color Slider"></div>
+                </IonThumbnail>
+                <IonLabel>Slider</IonLabel>
+              </IonItem>
+              <IonItem>
+                <IonThumbnail slot="start">
+                  <div className="legend-color Curveball"></div>
+                </IonThumbnail>
+                <IonLabel>Curveball</IonLabel>
+              </IonItem>
+              <IonItem>
+                <IonThumbnail slot="start">
+                  <div className="legend-color Sinker"></div>
+                </IonThumbnail>
+                <IonLabel>Sinker</IonLabel>
+              </IonItem>
+              <IonItem>
+                <IonThumbnail slot="start">
+                  <div className="legend-color Splitter"></div>
+                </IonThumbnail>
+                <IonLabel>Splitter</IonLabel>
+              </IonItem>
+              <IonItem>
+                <IonThumbnail slot="start">
+                  <div className="legend-color Knuckleball"></div>
+                </IonThumbnail>
+                <IonLabel>Knuckleball</IonLabel>
+              </IonItem>
+            </IonList>
+          </IonCardContent>
+        </IonCard>
+      </div>
     </IonContent>
   );
 };
