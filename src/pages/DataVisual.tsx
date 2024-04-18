@@ -1,11 +1,7 @@
 import { 
   IonContent, 
   IonHeader, 
-  IonPage, 
-  IonTitle, 
-  IonToolbar,
-  IonButtons,
-  IonMenuButton
+  IonPage
 } from '@ionic/react';
 import DataVisualContainer from '../components/DataVisualContainer';
 

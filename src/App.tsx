@@ -7,17 +7,7 @@ import {
   IonTabBar,
   IonTabButton,
   IonTabs,
-  setupIonicReact,
-  IonMenu,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonList,
-  IonItem,
-  IonSelect,
-  IonSelectOption,
-  IonMenuToggle
+  setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { baseballOutline, podiumOutline } from 'ionicons/icons';

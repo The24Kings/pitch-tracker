@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { IonIcon } from '@ionic/react';
 import { person } from 'ionicons/icons';
-import { IonButton, IonAlert, IonContent, IonGrid, IonRow, IonCol, IonSelect, IonSelectOption, IonCard, IonToolbar } from '@ionic/react';
+import { 
+  IonButton, 
+  IonAlert, 
+  IonContent, 
+  IonGrid, 
+  IonRow, 
+  IonCol, 
+  IonSelect, 
+  IonSelectOption, 
+  IonCard, 
+  IonToolbar 
+} from '@ionic/react';
 import { handleSubmit, handlePlayerSubmit } from '../handles/handlesubmit';
 import { firestore } from '../firebase_setup/firebase';
 import { collection, getDocs } from '@firebase/firestore';
