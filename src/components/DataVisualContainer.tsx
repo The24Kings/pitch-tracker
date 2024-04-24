@@ -112,7 +112,6 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
     }
   };
   
-  
 
   useEffect(() => {
     fetchPlayers(); // Fetch players when component mounts
@@ -120,10 +119,17 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
 
   useEffect(() => {
     if (selectedPlayer) {
-      getPitchData(); // Call getPitchData when player or pitch type changes
+      getPitchData(); // Call getPitchData immediately when a player is selected
     }
-  }, [selectedPlayer, selectedPitchType]); // React to player or pitch type changes
-
+  
+    const intervalId = setInterval(() => {
+      if (selectedPlayer) {
+        getPitchData(); // Call getPitchData every 1 second after the initial fetch
+      }
+    }, 1000); // Interval duration set to 1000 milliseconds (1 second)
+  
+    return () => clearInterval(intervalId); // Clear the interval when the component unmounts or selectedPlayer changes
+  }, [selectedPlayer, selectedPitchType]);
 
   useIonViewWillEnter(() => {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
