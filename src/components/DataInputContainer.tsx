@@ -19,6 +19,8 @@ import { collection, getDocs } from '@firebase/firestore';
 import { useIonViewWillEnter } from '@ionic/react';
 import strikeZoneWhite from '../../public/StrikeZoneWhite.webp';
 import strikeZone from '../../public/StrikeZone.png';
+import { Timestamp } from '@firebase/firestore'; // For Firestore Timestamp
+
 
 interface ContainerProps {
   name: string;
@@ -62,8 +64,18 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
   };
 
   const handleSecondAlertSave = async () => {
-    console.log("Selected player from second alert:", selectedPlayer);
-    await handleSubmit(selectedPlayer, selectedType, selectedResult, touchCoordinates); // Pitch Type and Result
+    const currentDate = new Date(); // Get current date
+    const formattedDate = currentDate.toISOString(); // You can use other formats if needed
+  
+    // Call the `handleSubmit` function with the new date parameter
+    await handleSubmit(
+      selectedPlayer,
+      selectedType,
+      selectedResult,
+      touchCoordinates,
+      formattedDate // Pass the date to the function
+    );
+  
     setSelectedType('');
     setSelectedResult('');
     setShowSecondAlert(false);

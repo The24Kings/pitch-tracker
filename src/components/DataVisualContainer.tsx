@@ -1,60 +1,70 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  IonCard, 
-  IonContent, 
-  IonToolbar, 
-  IonSelect, 
-  IonSelectOption, 
-  IonRow, 
-  IonGrid, 
-  IonCol, 
-  IonAlert, 
-  IonButton, 
-  IonCardTitle, 
+import {
+  IonCard,
+  IonContent,
+  IonToolbar,
+  IonSelect,
+  IonSelectOption,
+  IonRow,
+  IonGrid,
+  IonCol,
+  IonAlert,
+  IonButton,
+  IonCardTitle,
   IonCardSubtitle,
   IonList,
   IonItem,
   IonThumbnail,
   IonLabel,
   IonCardContent,
-  IonCardHeader
+  IonCardHeader,
 } from '@ionic/react';
 import { IonIcon } from '@ionic/react';
 import { person } from 'ionicons/icons';
 import { handlePlayerSubmit } from '../handles/handlesubmit';
-import { collection, getDocs, query, where, QuerySnapshot, DocumentData } from 'firebase/firestore';
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+} from 'firebase/firestore';
 import './DataVisualContainer.css';
 import strikeZoneWhite from '../../public/StrikeZoneWhite.webp';
 import strikeZone from '../../public/StrikeZone.png';
 import { firestore } from '../firebase_setup/firebase';
 import { useIonViewWillEnter } from '@ionic/react';
 
+// Main component
 const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
-  const [pitchData, setPitchData] = useState<{ pitch_type: string; pitch_result: string; x: number; y: number }[]>([]);
+  const [pitchData, setPitchData] = useState<
+    { pitch_type: string; pitch_result: string; x: number; y: number; date?: string }[]
+  >([]);
   const [selectedPlayer, setSelectedPlayer] = useState<string>('');
   const [players, setPlayers] = useState<string[]>([]);
   const [selectedPitch, setSelectedPitch] = useState<{ pitch_type: string; pitch_result: string } | null>(null);
-  const [showPlayerAlert, setShowPlayerAlert] = useState(false);
-  const [strikeZoneImage, setStrikeZoneImage] = useState('');
-  const [selectedPitchType, setSelectedPitchType] = useState("");
-  const [pitchTypes, setPitchTypes] = useState<string[]>([]); // Keep original list of pitch types
+  const [showPlayerAlert, setShowPlayerAlert] = useState(false); // Declare this first
+  const [strikeZoneImage, setStrikeZoneImage] = useState<string>('');
+  const [selectedPitchType, setSelectedPitchType] = useState('');
+  const [pitchTypes, setPitchTypes] = useState<string[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [dates, setDates] = useState<string[]>([]);
 
-
+  // Player Alert Save Handler
   const handlePlayerAlertSave = async (name, onPlayerAdded) => {
     if (!name.trim()) {
       console.error("Player name is required!");
       return;
     }
-  
+
     await handlePlayerSubmit(name);
     setShowPlayerAlert(false);
-  
+
     if (onPlayerAdded) {
       onPlayerAdded(); // Call the callback to refresh the player list
     }
   };
 
-  // Function to fetch players from Firestore
+  // Fetch players from Firestore
   const fetchPlayers = async () => {
     try {
       const playersCollection = await getDocs(collection(firestore, 'players'));
@@ -64,9 +74,8 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
       console.error('Error fetching players:', error);
     }
   };
-  
 
-  // Function to get the pitch data based on selected player
+  // Fetch pitch data from Firestore
   const getPitchData = async () => {
     try {
       if (!selectedPlayer) {
@@ -88,25 +97,37 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
       const pitchDataQuerySnapshot = await getDocs(pitchDataCollectionRef);
   
       let data = [];
-      let pitchTypesSet = new Set<string>(); // Explicitly declare a set of strings
+      let pitchTypesSet = new Set<string>();
+      let dateSet = new Set<string>();
   
       pitchDataQuerySnapshot.forEach((doc) => {
         const pitchType = doc.data().pitch_type;
-        const { pitch_result, touch_coordinates } = doc.data();
+        const { pitch_result, touch_coordinates, date } = doc.data();
         const { x, y } = touch_coordinates;
   
-        // Make sure to only work with strings
-        if (typeof pitchType === 'string') {
-          pitchTypesSet.add(pitchType); // Add to set if it's a string
+        // Format the date to only include the year, month, and day
+        let formattedDate = "";
+        if (typeof date === "string") {
+          const parsedDate = new Date(date);
+          formattedDate = parsedDate.toISOString().split("T")[0]; // Extract the date part
+          dateSet.add(formattedDate); // Add to the set of unique dates
         }
   
-        if (!selectedPitchType || pitchType === selectedPitchType) {
-          data.push({ pitch_type: pitchType, pitch_result, x, y });
+        // Apply filters for pitch type and date
+        if ((!selectedPitchType || pitchType === selectedPitchType) &&
+            (!selectedDate || formattedDate === selectedDate)) {
+          data.push({ pitch_type: pitchType, pitch_result, x, y, date: formattedDate });
+        }
+  
+        // Add pitch type to the set of unique pitch types
+        if (typeof pitchType === "string") {
+          pitchTypesSet.add(pitchType);
         }
       });
   
       setPitchData(data);
-      setPitchTypes(Array.from(pitchTypesSet)); // Convert set to an array
+      setPitchTypes(Array.from(pitchTypesSet));
+      setDates(Array.from(dateSet)); // Populate dropdown with formatted dates
     } catch (error) {
       console.error("Error getting documents:", error);
     }
@@ -119,25 +140,21 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
 
   useEffect(() => {
     if (selectedPlayer) {
-      getPitchData(); // Call getPitchData immediately when a player is selected
+      getPitchData(); // Fetch pitch data when player or filters change
     }
-  
+
     const intervalId = setInterval(() => {
       if (selectedPlayer) {
-        getPitchData(); // Call getPitchData every 1 second after the initial fetch
+        getPitchData(); // Fetch pitch data every 1 second
       }
-    }, 1000); // Interval duration set to 1000 milliseconds (1 second)
-  
-    return () => clearInterval(intervalId); // Clear the interval when the component unmounts or selectedPlayer changes
-  }, [selectedPlayer, selectedPitchType]);
+    }, 1000); // Set interval to 1 second
+
+    return () => clearInterval(intervalId); // Clear interval when component unmounts or selectedPlayer changes
+  }, [selectedPlayer, selectedPitchType, selectedDate]); // Add selectedDate to dependencies
 
   useIonViewWillEnter(() => {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (prefersDark) {
-      setStrikeZoneImage(strikeZoneWhite); // Image for dark mode
-    } else {
-      setStrikeZoneImage(strikeZone); // Image for light mode
-    }
+    setStrikeZoneImage(prefersDark ? strikeZoneWhite : strikeZone);
   });
 
   return (
@@ -147,7 +164,7 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
           <IonGrid>
             <IonRow className="ion-align-items-center ion-justify-content-around">
               <IonCol size="auto">
-                <IonIcon icon={person}></IonIcon>
+                <IonIcon icon={person} />
               </IonCol>
               <IonCol size="auto">
                 <IonSelect
@@ -173,7 +190,6 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
                   placeholder="Filter by Pitch Type"
                   onIonChange={(e) => setSelectedPitchType(e.detail.value)}
                 >
-                  {/* Default option for "view all pitches" */}
                   <IonSelectOption value="">
                     All Pitches
                   </IonSelectOption>
@@ -184,115 +200,130 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
                   ))}
                 </IonSelect>
               </IonCol>
+              {/* New dropdown for date selection */}
+              <IonCol size="auto">
+              <IonSelect
+                value={selectedDate}
+                placeholder="Filter by Date"
+                onIonChange={(e) => setSelectedDate(e.detail.value)}
+              >
+                <IonSelectOption value="">
+                  All Dates
+                </IonSelectOption>
+                {dates.map((date) => (
+                  <IonSelectOption key={date} value={date}>
+                    {date}
+                  </IonSelectOption>
+                ))}
+              </IonSelect>
+              </IonCol>
             </IonRow>
           </IonGrid>
         </IonToolbar>
       </IonCard>
 
       <IonAlert
-  isOpen={showPlayerAlert}
-  onDidDismiss={() => setShowPlayerAlert(false)}
-  header={'Add Player'}
-  inputs={[
-    {
-      name: 'playerName',
-      type: 'text',
-      placeholder: 'Enter player name',
-    },
-  ]}
-  buttons={[
-    {
-      text: 'Cancel',
-      role: 'cancel',
-      handler: () => setShowPlayerAlert(false),
-    },
-    {
-      text: 'Save',
-      handler: (data) => {
-        const playerName = data.playerName?.trim();
-        if (playerName) {
-          handlePlayerAlertSave(playerName, fetchPlayers); // Pass fetchPlayers as the callback
-        }
-      },
-    },
-  ]}
-/>
+        isOpen={showPlayerAlert}
+        onDidDismiss={() => setShowPlayerAlert(false)}
+        header={'Add Player'}
+        inputs={[
+          {
+            name: 'playerName',
+            type: 'text',
+            placeholder: 'Enter player name',
+          },
+        ]}
+        buttons={[
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            handler: () => setShowPlayerAlert(false),
+          },
+          {
+            text: 'Save',
+            handler: (data) => {
+              const playerName = data.playerName?.trim();
+              if (playerName) {
+                handlePlayerAlertSave(playerName, fetchPlayers);
+              }
+            },
+          },
+        ]}
+      />
 
       <div className="strike-zone-container">
-          <img src={strikeZoneImage} alt="Strike Zone" className="strike-zone-image" />
-          {/* Map over pitchData array and render circles for each pitch */}
-          {pitchData.map((data, index) => (
-            <div 
-              key={index} 
-              className={`pitch-circle ${data.pitch_type}`} 
-              style={{ top: data.y - 15, left: data.x - 15 }}
-              onClick={() => setSelectedPitch({ pitch_type: data.pitch_type, pitch_result: data.pitch_result })}
-            />
-          ))}
-          {/* Display pitch result */}
-          {selectedPitch && (
-            <div className="pitch-result">
-              <p>{`Pitch Type: ${selectedPitch.pitch_type}`}</p>
-              <p>{`Pitch Result: ${selectedPitch.pitch_result}`}</p>
-            </div>
-          )}
+        <img src={strikeZoneImage} alt="Strike Zone" className="strike-zone-image" />
+        {pitchData.map((data, index) => (
+          <div
+            key={index}
+            className={`pitch-circle ${data.pitch_type}`}
+            style={{ top: data.y - 15, left: data.x - 15 }}
+            onClick={() =>
+              setSelectedPitch({ pitch_type: data.pitch_type, pitch_result: data.pitch_result })
+            }
+          />
+        ))}
+        {selectedPitch && (
+          <div className="pitch-result">
+            <p>{`Pitch Type: ${selectedPitch.pitch_type}`}</p>
+            <p>{`Pitch Result: ${selectedPitch.pitch_result}`}</p>
+          </div>
+        )}
       </div>
 
-      {/* Legend container */}
       <div className="legend-container">
         <IonCard>
           <IonCardHeader>
             <IonCardTitle>Pitch Type</IonCardTitle>
             <IonCardSubtitle>Legend</IonCardSubtitle>
           </IonCardHeader>
-
           <IonCardContent>
             <IonList>
               <IonItem>
                 <IonThumbnail slot="start">
-                  <div className="legend-color Fastball"></div>
+                  <div className="legend-color Fastball" />
                 </IonThumbnail>
-                <IonLabel>FastBall</IonLabel>
+                <IonLabel>Fastball</IonLabel>
               </IonItem>
               <IonItem>
                 <IonThumbnail slot="start">
-                  <div className="legend-color Changeup"></div>
+                  <div className="legend-color Changeup" />
                 </IonThumbnail>
                 <IonLabel>Changeup</IonLabel>
               </IonItem>
               <IonItem>
                 <IonThumbnail slot="start">
-                  <div className="legend-color Cutter"></div>
+                  <div className="legend-color Cutter" />
                 </IonThumbnail>
                 <IonLabel>Cutter</IonLabel>
               </IonItem>
               <IonItem>
                 <IonThumbnail slot="start">
-                  <div className="legend-color Slider"></div>
+                  <div className="legend-color Slider" />
                 </IonThumbnail>
                 <IonLabel>Slider</IonLabel>
               </IonItem>
               <IonItem>
                 <IonThumbnail slot="start">
-                  <div className="legend-color Curveball"></div>
+                  <div className="legend-color Curveball" />
                 </IonThumbnail>
                 <IonLabel>Curveball</IonLabel>
               </IonItem>
               <IonItem>
                 <IonThumbnail slot="start">
-                  <div className="legend-color Sinker"></div>
+                  <div className="legend-color Sinker" />
                 </IonThumbnail>
                 <IonLabel>Sinker</IonLabel>
               </IonItem>
               <IonItem>
                 <IonThumbnail slot="start">
-                  <div className="legend-color Splitter"></div>
+                  <div className="legend-color Splitter" />
                 </IonThumbnail>
                 <IonLabel>Splitter</IonLabel>
               </IonItem>
               <IonItem>
                 <IonThumbnail slot="start">
-                  <div className="legend-color Knuckleball"></div>
+                  <div className="legend-color Knuckleball" />
                 </IonThumbnail>
                 <IonLabel>Knuckleball</IonLabel>
               </IonItem>
