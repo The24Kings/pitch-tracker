@@ -161,20 +161,24 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
               </IonCol>
             </IonRow>
             <IonRow className="ion-align-items-center ion-justify-content-around">
-  <IonCol size="auto">
-  <IonSelect
-  value={selectedPitchType}
-  placeholder="Filter by Pitch Type"
-  onIonChange={(e) => setSelectedPitchType(e.detail.value)}
->
-  {pitchTypes.map((type) => (
-    <IonSelectOption key={type} value={type}>
-      {type}
-    </IonSelectOption>
-  ))}
-</IonSelect>
-  </IonCol>
-</IonRow>
+              <IonCol size="auto">
+                <IonSelect
+                  value={selectedPitchType}
+                  placeholder="Filter by Pitch Type"
+                  onIonChange={(e) => setSelectedPitchType(e.detail.value)}
+                >
+                  {/* Default option for "view all pitches" */}
+                  <IonSelectOption value="">
+                    All Pitches
+                  </IonSelectOption>
+                  {pitchTypes.map((type) => (
+                    <IonSelectOption key={type} value={type}>
+                      {type}
+                    </IonSelectOption>
+                  ))}
+                </IonSelect>
+              </IonCol>
+            </IonRow>
           </IonGrid>
         </IonToolbar>
       </IonCard>
