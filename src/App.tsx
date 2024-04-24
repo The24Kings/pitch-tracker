@@ -47,7 +47,7 @@ const App: React.FC = () => (
             <DataVisual />
           </Route>
           <Route exact path="/">
-            <Redirect to="/DataVisual" />
+            <Redirect to="/DataInput" />
           </Route>
         </IonRouterOutlet>
         
