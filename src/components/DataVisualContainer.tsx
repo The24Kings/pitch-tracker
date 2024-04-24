@@ -36,6 +36,9 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
   const [selectedPitch, setSelectedPitch] = useState<{ pitch_type: string; pitch_result: string } | null>(null);
   const [showPlayerAlert, setShowPlayerAlert] = useState(false);
   const [strikeZoneImage, setStrikeZoneImage] = useState('');
+  const [selectedPitchType, setSelectedPitchType] = useState("");
+  const [pitchTypes, setPitchTypes] = useState<string[]>([]); // Keep original list of pitch types
+
 
   const handlePlayerAlertSave = async (name, onPlayerAdded) => {
     if (!name.trim()) {
@@ -67,12 +70,12 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
   const getPitchData = async () => {
     try {
       if (!selectedPlayer) {
-        console.error('Please select a player');
+        console.error("Please select a player");
         return;
       }
   
-      const playerCollection = collection(firestore, 'players');
-      const playerQuery = query(playerCollection, where('name', '==', selectedPlayer));
+      const playerCollection = collection(firestore, "players");
+      const playerQuery = query(playerCollection, where("name", "==", selectedPlayer));
       const playerQuerySnapshot = await getDocs(playerQuery);
   
       if (playerQuerySnapshot.empty) {
@@ -81,21 +84,35 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
       }
   
       const playerDocRef = playerQuerySnapshot.docs[0].ref;
-      const pitchDataCollectionRef = collection(playerDocRef, 'pitch_data');
-      const pitchDataQuerySnapshot: QuerySnapshot<DocumentData> = await getDocs(pitchDataCollectionRef);
+      const pitchDataCollectionRef = collection(playerDocRef, "pitch_data");
+      const pitchDataQuerySnapshot = await getDocs(pitchDataCollectionRef);
   
-      const data: { pitch_type: string; pitch_result: string; x: number; y: number }[] = [];
+      let data = [];
+      let pitchTypesSet = new Set<string>(); // Explicitly declare a set of strings
+  
       pitchDataQuerySnapshot.forEach((doc) => {
-        const { pitch_type, pitch_result, touch_coordinates } = doc.data();
-        const { x, y } = touch_coordinates; // Access x and y coordinates from touch_coordinates field
-        data.push({ pitch_type, pitch_result, x, y });
+        const pitchType = doc.data().pitch_type;
+        const { pitch_result, touch_coordinates } = doc.data();
+        const { x, y } = touch_coordinates;
+  
+        // Make sure to only work with strings
+        if (typeof pitchType === 'string') {
+          pitchTypesSet.add(pitchType); // Add to set if it's a string
+        }
+  
+        if (!selectedPitchType || pitchType === selectedPitchType) {
+          data.push({ pitch_type: pitchType, pitch_result, x, y });
+        }
       });
   
       setPitchData(data);
+      setPitchTypes(Array.from(pitchTypesSet)); // Convert set to an array
     } catch (error) {
-      console.error('Error getting documents:', error);
+      console.error("Error getting documents:", error);
     }
   };
+  
+  
 
   useEffect(() => {
     fetchPlayers(); // Fetch players when component mounts
@@ -103,17 +120,10 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
 
   useEffect(() => {
     if (selectedPlayer) {
-      getPitchData(); // Call getPitchData immediately when a player is selected
+      getPitchData(); // Call getPitchData when player or pitch type changes
     }
-  
-    const intervalId = setInterval(() => {
-      if (selectedPlayer) {
-        getPitchData(); // Call getPitchData every 1 second after the initial fetch
-      }
-    }, 1000); // Interval duration set to 1000 milliseconds (1 second)
-  
-    return () => clearInterval(intervalId); // Clear the interval when the component unmounts or selectedPlayer changes
-  }, [selectedPlayer]);
+  }, [selectedPlayer, selectedPitchType]); // React to player or pitch type changes
+
 
   useIonViewWillEnter(() => {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -150,6 +160,21 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
                 <IonButton onClick={() => setShowPlayerAlert(true)}>+ Player</IonButton>
               </IonCol>
             </IonRow>
+            <IonRow className="ion-align-items-center ion-justify-content-around">
+  <IonCol size="auto">
+  <IonSelect
+  value={selectedPitchType}
+  placeholder="Filter by Pitch Type"
+  onIonChange={(e) => setSelectedPitchType(e.detail.value)}
+>
+  {pitchTypes.map((type) => (
+    <IonSelectOption key={type} value={type}>
+      {type}
+    </IonSelectOption>
+  ))}
+</IonSelect>
+  </IonCol>
+</IonRow>
           </IonGrid>
         </IonToolbar>
       </IonCard>
