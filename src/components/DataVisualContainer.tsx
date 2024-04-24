@@ -37,26 +37,31 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
   const [showPlayerAlert, setShowPlayerAlert] = useState(false);
   const [strikeZoneImage, setStrikeZoneImage] = useState('');
 
-  const handlePlayerAlertSave = async (name: string) => {
+  const handlePlayerAlertSave = async (name, onPlayerAdded) => {
     if (!name.trim()) {
       console.error("Player name is required!");
       return;
     }
-
+  
     await handlePlayerSubmit(name);
     setShowPlayerAlert(false);
+  
+    if (onPlayerAdded) {
+      onPlayerAdded(); // Call the callback to refresh the player list
+    }
   };
 
   // Function to fetch players from Firestore
   const fetchPlayers = async () => {
     try {
       const playersCollection = await getDocs(collection(firestore, 'players'));
-      const playerNames = playersCollection.docs.map((doc) => doc.data().name);
-      setPlayers(playerNames);
+      const playerNames = playersCollection.docs.map((doc) => doc.data().name); // Ensure unique names
+      setPlayers([...new Set(playerNames)]); // Ensure no duplicates
     } catch (error) {
       console.error('Error fetching players:', error);
     }
   };
+  
 
   // Function to get the pitch data based on selected player
   const getPitchData = async () => {
@@ -150,33 +155,33 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
       </IonCard>
 
       <IonAlert
-        isOpen={showPlayerAlert}
-        onDidDismiss={() => setShowPlayerAlert(false)}
-        header={'Add Player'}
-        inputs={[
-          {
-            name: 'playerName',
-            type: 'text',
-            placeholder: 'Enter player name'
-          },
-        ]}
-        buttons={[
-          {
-            text: 'Cancel',
-            role: 'cancel',
-            handler: () => {
-              setShowPlayerAlert(false);
-            },
-          },
-          {
-            text: 'Save',
-            handler: data => {
-              console.log("Player name input:", data.playerName);
-              handlePlayerAlertSave(data.playerName);
-            }
-          },
-        ]}
-      />
+  isOpen={showPlayerAlert}
+  onDidDismiss={() => setShowPlayerAlert(false)}
+  header={'Add Player'}
+  inputs={[
+    {
+      name: 'playerName',
+      type: 'text',
+      placeholder: 'Enter player name',
+    },
+  ]}
+  buttons={[
+    {
+      text: 'Cancel',
+      role: 'cancel',
+      handler: () => setShowPlayerAlert(false),
+    },
+    {
+      text: 'Save',
+      handler: (data) => {
+        const playerName = data.playerName?.trim();
+        if (playerName) {
+          handlePlayerAlertSave(playerName, fetchPlayers); // Pass fetchPlayers as the callback
+        }
+      },
+    },
+  ]}
+/>
 
       <div className="strike-zone-container">
           <img src={strikeZoneImage} alt="Strike Zone" className="strike-zone-image" />

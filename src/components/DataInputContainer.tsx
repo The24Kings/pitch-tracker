@@ -30,20 +30,28 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
   const [selectedResult, setSelectedResult] = useState('');
   const [showSecondAlert, setShowSecondAlert] = useState(false);
   const [showPlayerAlert, setShowPlayerAlert] = useState(false);
-  const [players, setPlayers] = useState<string[]>([]);
+  const [players, setPlayers] = useState<{ id: string, name: string }[]>([]);
   const [selectedPlayer, setSelectedPlayer] = useState('');
   const [touchCoordinates, setTouchCoordinates] = useState({ x: 0, y: 0 });
   const [strikeZoneImage, setStrikeZoneImage] = useState('');
 
-  useEffect(() => {
-    const fetchPlayers = async () => {
+  const fetchPlayers = async () => {
+    try {
       const playersCollection = await getDocs(collection(firestore, 'players'));
-      const playerNames = playersCollection.docs.map((doc) => doc.data().name);
-      setPlayers(playerNames);
-    };
+      const playerData = playersCollection.docs.map((doc) => ({
+        id: doc.id, // Use document ID as unique key
+        name: doc.data().name,
+      }));
+      setPlayers(playerData); // Set state with player data
+    } catch (error) {
+      console.error('Error fetching players:', error);
+    }
+  };
 
-    fetchPlayers();
+  useEffect(() => {
+    fetchPlayers(); // Fetch players when component mounts
   }, []);
+
 
   const handleSave = async () => {
     console.log("Selected player before submission:", selectedPlayer);
@@ -62,15 +70,15 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
   };
 
   const handlePlayerAlertSave = async (name: string) => {
-    console.log("Player name:", name);
-
     if (!name.trim()) {
       console.error("Player name is required!");
       return;
     }
 
-    await handlePlayerSubmit(name);
-    setShowPlayerAlert(false);
+    await handlePlayerSubmit(name); // Add the new player
+    setShowPlayerAlert(false); // Close the alert
+
+    fetchPlayers(); // Refresh the list of players
   };
 
   const handleRegionClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -100,17 +108,17 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
                 <IonIcon icon={person} />
               </IonCol>
               <IonCol size="auto">
-                <IonSelect
-                  value={selectedPlayer}
-                  placeholder="Select Player"
-                  onIonChange={(e) => setSelectedPlayer(e.detail.value)}
-                >
-                  {players.map((player) => (
-                    <IonSelectOption key={player} value={player}>
-                      {player}
-                    </IonSelectOption>
-                  ))}
-                </IonSelect>
+              <IonSelect
+                value={selectedPlayer}
+                placeholder="Select Player"
+                onIonChange={(e) => setSelectedPlayer(e.detail.value)}
+              >
+                {players.map((player) => (
+                  <IonSelectOption key={player.id} value={player.name}>
+                    {player.name}
+                  </IonSelectOption>
+                ))}
+              </IonSelect>
               </IonCol>
               <IonCol size="auto">
                 <IonButton onClick={() => setShowPlayerAlert(true)}>+ Player</IonButton>
