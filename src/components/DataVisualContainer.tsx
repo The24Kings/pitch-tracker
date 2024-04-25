@@ -20,9 +20,6 @@ import {
   IonCardHeader,
   IonToggle,
 } from '@ionic/react';
-import { IonIcon } from '@ionic/react';
-import { person } from 'ionicons/icons';
-import { handlePlayerSubmit } from '../handles/handlesubmit';
 import {
   collection,
   getDocs,
@@ -50,21 +47,6 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [dates, setDates] = useState<string[]>([]);
   const [showLegend, setShowLegend] = useState(false);
-
-  // Player Alert Save Handler
-  const handlePlayerAlertSave = async (name, onPlayerAdded) => {
-    if (!name.trim()) {
-      console.error("Player name is required!");
-      return;
-    }
-
-    await handlePlayerSubmit(name);
-    setShowPlayerAlert(false);
-
-    if (onPlayerAdded) {
-      onPlayerAdded(); // Call the callback to refresh the player list
-    }
-  };
 
   // Fetch players from Firestore
   const fetchPlayers = async () => {
@@ -173,9 +155,6 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
           <IonGrid>
             <IonRow className="ion-align-items-center ion-justify-content-around">
               <IonCol size="auto">
-                <IonIcon icon={person} />
-              </IonCol>
-              <IonCol size="auto">
                 <IonSelect
                   value={selectedPlayer}
                   placeholder="Select Player"
@@ -188,11 +167,6 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
                   ))}
                 </IonSelect>
               </IonCol>
-              <IonCol size="auto">
-                <IonButton onClick={() => setShowPlayerAlert(true)}>+ Player</IonButton>
-              </IonCol>
-            </IonRow>
-            <IonRow className="ion-align-items-center ion-justify-content-around">
               <IonCol size="auto">
                 <IonSelect
                   value={selectedPitchType}
@@ -208,11 +182,6 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
                     </IonSelectOption>
                   ))}
                 </IonSelect>
-              </IonCol>
-              <IonCol size="auto">
-                <IonToggle checked={showLegend} onIonChange={(e) => setShowLegend(e.detail.checked)}>
-                  Show Legend
-                </IonToggle>
               </IonCol>
               <IonCol size="auto">
                 <IonSelect
@@ -231,38 +200,16 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
                 </IonSelect>
               </IonCol>
             </IonRow>
+            <IonRow className="ion-align-items-center ion-justify-content-around">
+              <IonCol size="auto">
+                <IonToggle checked={showLegend} onIonChange={(e) => setShowLegend(e.detail.checked)}>
+                  Legend
+                </IonToggle>
+              </IonCol>
+            </IonRow>
           </IonGrid>
         </IonToolbar>
       </IonCard>
-
-      <IonAlert
-        isOpen={showPlayerAlert}
-        onDidDismiss={() => setShowPlayerAlert(false)}
-        header={'Add Player'}
-        inputs={[
-          {
-            name: 'playerName',
-            type: 'text',
-            placeholder: 'Enter player name',
-          },
-        ]}
-        buttons={[
-          {
-            text: 'Cancel',
-            role: 'cancel',
-            handler: () => setShowPlayerAlert(false),
-          },
-          {
-            text: 'Save',
-            handler: (data) => {
-              const playerName = data.playerName?.trim();
-              if (playerName) {
-                handlePlayerAlertSave(playerName, fetchPlayers);
-              }
-            },
-          },
-        ]}
-      />
 
       <IonCard>
         <IonCardContent>
@@ -270,7 +217,7 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
             {selectedPitch ? `${selectedPitch.pitch_type}` : 'Select a pitch'}
           </IonCardTitle>
           <IonCardSubtitle>
-            {selectedPitch ? `Result: ${selectedPitch.pitch_result}` : ''}
+            {selectedPitch ? `${selectedPitch.pitch_result}` : ''}
           </IonCardSubtitle>
         </IonCardContent>
       </IonCard>
