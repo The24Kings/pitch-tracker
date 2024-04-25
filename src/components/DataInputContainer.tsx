@@ -27,7 +27,7 @@ const DataInputContainer = () => {
   const [selectedResult, setSelectedResult] = useState('');
   const [showSecondAlert, setShowSecondAlert] = useState(false);
   const [showPlayerAlert, setShowPlayerAlert] = useState(false);
-  const [players, setPlayers] = useState<{ id: string, name: string }[]>([]);
+  const [players, setPlayers] = useState<string[]>([]);
   const [selectedPlayer, setSelectedPlayer] = useState('');
   const [touchCoordinates, setTouchCoordinates] = useState({ x: 0, y: 0 });
   const [strikeZoneImage, setStrikeZoneImage] = useState('');
@@ -35,11 +35,9 @@ const DataInputContainer = () => {
   const fetchPlayers = async () => {
     try {
       const playersCollection = await getDocs(collection(firestore, 'players'));
-      const playerData = playersCollection.docs.map((doc) => ({
-        id: doc.id, // Use document ID as unique key
-        name: doc.data().name,
-      }));
-      setPlayers(playerData); // Set state with player data
+      const playerNames = playersCollection.docs.map((doc) => doc.data().name); // Ensure unique names
+      
+      setPlayers([...new Set(playerNames)]); // Ensure no duplicates
     } catch (error) {
       console.error('Error fetching players:', error);
     }
@@ -130,17 +128,17 @@ const DataInputContainer = () => {
                 <IonIcon icon={person} />
               </IonCol>
               <IonCol size="auto">
-              <IonSelect
-                value={selectedPlayer}
-                placeholder="Select Player"
-                onIonChange={(e) => setSelectedPlayer(e.detail.value)}
-              >
-                {players.map((player) => (
-                  <IonSelectOption key={player.id} value={player.name}>
-                    {player.name}
-                  </IonSelectOption>
-                ))}
-              </IonSelect>
+                <IonSelect
+                  value={selectedPlayer}
+                  placeholder="Select Player"
+                  onIonChange={(e) => setSelectedPlayer(e.detail.value)}
+                >
+                  {players.map((player) => (
+                    <IonSelectOption key={player} value={player}>
+                      {player}
+                    </IonSelectOption>
+                  ))}
+                </IonSelect>
               </IonCol>
               <IonCol size="auto">
                 <IonButton onClick={() => setShowPlayerAlert(true)}>+ Player</IonButton>
