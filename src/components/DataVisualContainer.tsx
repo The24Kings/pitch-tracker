@@ -136,6 +136,13 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
 
   useEffect(() => {
     fetchPlayers(); // Fetch players when component mounts
+
+    const intervalId = setInterval(() => {
+        fetchPlayers(); // Fetch pitch data every 1 second
+
+    }, 1000); // Set interval to 1 second
+
+    return () => clearInterval(intervalId); // Clear interval when component unmounts or selectedPlayer changes
   }, []);
 
   useEffect(() => {
