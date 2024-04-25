@@ -8,8 +8,6 @@ import {
   IonRow,
   IonGrid,
   IonCol,
-  IonAlert,
-  IonButton,
   IonCardTitle,
   IonCardSubtitle,
   IonList,
@@ -20,27 +18,27 @@ import {
   IonCardHeader,
   IonToggle,
 } from '@ionic/react';
+
 import {
   collection,
   getDocs,
   query,
   where,
 } from 'firebase/firestore';
+
 import './DataVisualContainer.css';
-import strikeZoneWhite from '../../public/StrikeZoneWhite.webp';
-import strikeZone from '../../public/StrikeZone.png';
+import strikeZoneWhite from '../../public/StrikeZoneWhite.png';
+import strikeZoneBlack from '../../public/StrikeZoneBlack.png';
 import { firestore } from '../firebase_setup/firebase';
-import { useIonViewWillEnter } from '@ionic/react';
 
 // Main component
-const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
+const DataVisualContainer = () => {
   const [pitchData, setPitchData] = useState<
     { pitch_type: string; pitch_result: string; x: number; y: number; date?: string }[]
   >([]);
   const [selectedPlayer, setSelectedPlayer] = useState<string>('');
   const [players, setPlayers] = useState<string[]>([]);
   const [selectedPitch, setSelectedPitch] = useState<{ pitch_type: string; pitch_result: string } | null>(null);
-  const [showPlayerAlert, setShowPlayerAlert] = useState(false); // Declare this first
   const [strikeZoneImage, setStrikeZoneImage] = useState<string>('');
   const [selectedPitchType, setSelectedPitchType] = useState('');
   const [pitchTypes, setPitchTypes] = useState<string[]>([]);
@@ -53,6 +51,7 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
     try {
       const playersCollection = await getDocs(collection(firestore, 'players'));
       const playerNames = playersCollection.docs.map((doc) => doc.data().name); // Ensure unique names
+      
       setPlayers([...new Set(playerNames)]); // Ensure no duplicates
     } catch (error) {
       console.error('Error fetching players:', error);
@@ -143,10 +142,31 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
     return () => clearInterval(intervalId); // Clear interval when component unmounts or selectedPlayer changes
   }, [selectedPlayer, selectedPitchType, selectedDate]); // Add selectedDate to dependencies
 
-  useIonViewWillEnter(() => {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    setStrikeZoneImage(prefersDark ? strikeZoneWhite : strikeZone);
-  });
+  const querySystem = () => {
+    const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
+
+    useEffect(() => {
+      function updateTheme() {
+        const prefersDark = mediaQueryList.matches;
+
+        if (prefersDark) {
+          setStrikeZoneImage(strikeZoneWhite);
+        } else {
+          setStrikeZoneImage(strikeZoneBlack);
+        }
+      }
+
+      updateTheme();
+
+      mediaQueryList.addEventListener('change', updateTheme);
+
+      return () => {
+         mediaQueryList.removeEventListener('change', updateTheme);
+      };
+    }, [mediaQueryList]);
+  };
+
+  querySystem();
 
   return (
     <IonContent className="DataVisualContainer">
