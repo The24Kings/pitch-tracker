@@ -18,6 +18,7 @@ import {
   IonLabel,
   IonCardContent,
   IonCardHeader,
+  IonToggle,
 } from '@ionic/react';
 import { IonIcon } from '@ionic/react';
 import { person } from 'ionicons/icons';
@@ -48,6 +49,7 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
   const [pitchTypes, setPitchTypes] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [dates, setDates] = useState<string[]>([]);
+  const [showLegend, setShowLegend] = useState(false);
 
   // Player Alert Save Handler
   const handlePlayerAlertSave = async (name, onPlayerAdded) => {
@@ -200,22 +202,26 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
                   ))}
                 </IonSelect>
               </IonCol>
-              {/* New dropdown for date selection */}
               <IonCol size="auto">
-              <IonSelect
-                value={selectedDate}
-                placeholder="Filter by Date"
-                onIonChange={(e) => setSelectedDate(e.detail.value)}
-              >
-                <IonSelectOption value="">
-                  All Dates
-                </IonSelectOption>
-                {dates.map((date) => (
-                  <IonSelectOption key={date} value={date}>
-                    {date}
+                <IonToggle checked={showLegend} onIonChange={(e) => setShowLegend(e.detail.checked)}>
+                  Show Legend
+                </IonToggle>
+              </IonCol>
+              <IonCol size="auto">
+                <IonSelect
+                  value={selectedDate}
+                  placeholder="Filter by Date"
+                  onIonChange={(e) => setSelectedDate(e.detail.value)}
+                >
+                  <IonSelectOption value="">
+                    All Dates
                   </IonSelectOption>
-                ))}
-              </IonSelect>
+                  {dates.map((date) => (
+                    <IonSelectOption key={date} value={date}>
+                      {date}
+                    </IonSelectOption>
+                  ))}
+                </IonSelect>
               </IonCol>
             </IonRow>
           </IonGrid>
@@ -251,6 +257,17 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
         ]}
       />
 
+      <IonCard>
+        <IonCardContent>
+          <IonCardTitle>
+            {selectedPitch ? `${selectedPitch.pitch_type}` : 'Select a pitch'}
+          </IonCardTitle>
+          <IonCardSubtitle>
+            {selectedPitch ? `Result: ${selectedPitch.pitch_result}` : ''}
+          </IonCardSubtitle>
+        </IonCardContent>
+      </IonCard>
+
       <div className="strike-zone-container">
         <img src={strikeZoneImage} alt="Strike Zone" className="strike-zone-image" />
         {pitchData.map((data, index) => (
@@ -263,15 +280,9 @@ const DataVisualContainer: React.FC<{ name: string }> = ({ name }) => {
             }
           />
         ))}
-        {selectedPitch && (
-          <div className="pitch-result">
-            <p>{`Pitch Type: ${selectedPitch.pitch_type}`}</p>
-            <p>{`Pitch Result: ${selectedPitch.pitch_result}`}</p>
-          </div>
-        )}
       </div>
 
-      <div className="legend-container">
+      <div className="legend-container" style={{ display: showLegend ? 'block' : 'none' }}>
         <IonCard>
           <IonCardHeader>
             <IonCardTitle>Pitch Type</IonCardTitle>

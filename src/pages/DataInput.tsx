@@ -8,7 +8,7 @@ import DataInputContainer from '../components/DataInputContainer';
 const DataInput: React.FC = () => {
   return (
     <IonPage>
-      <IonContent fullscreen>
+      <IonContent forceOverscroll={false}>
         <IonHeader collapse="condense">
         </IonHeader>
         <DataInputContainer name="Data Input page" />

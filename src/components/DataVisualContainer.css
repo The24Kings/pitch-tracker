@@ -22,6 +22,7 @@
 .container a {
   text-decoration: none;
 }
+
 .strike-zone-container {
   position: relative;
   width: 100%;
@@ -76,4 +77,8 @@
 }
 .Knuckleball {
   background-color: purple;
+}
+
+ion-content {
+  --overflow: auto;
 }
