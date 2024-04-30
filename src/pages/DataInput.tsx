@@ -9,9 +9,7 @@ const DataInput: React.FC = () => {
   return (
     <IonPage>
       <IonContent forceOverscroll={false}>
-        <IonHeader collapse="condense">
-        </IonHeader>
-        <DataInputContainer name="Data Input page" />
+        <DataInputContainer/>
       </IonContent>
     </IonPage>
   );

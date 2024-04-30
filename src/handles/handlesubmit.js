@@ -40,6 +40,21 @@ export const handleSubmit = async (
 export const handlePlayerSubmit = async (playerName) => {
     const playersRef = collection(firestore, "players");
 
+    // Check if the player already exists
+    try {
+      const playerQuery = query(collection(firestore, 'players'), where('name', '==', playerName));
+      const querySnapshot = await getDocs(playerQuery);
+  
+      // If a document matching the playerName is found
+      if (!querySnapshot.empty) {
+        console.error(`Player with name "${playerName}" already exists.`);
+        return;
+      }
+
+    } catch(err) {
+      console.error("Error fetching player data: ", err);
+    }
+
     try {
         // Add a new document to the "players" collection with playerName as its ID
         await addDoc(playersRef, { name: playerName });

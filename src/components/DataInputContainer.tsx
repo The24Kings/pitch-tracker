@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { IonIcon } from '@ionic/react';
 import { person } from 'ionicons/icons';
+
 import { 
   IonButton, 
   IonAlert, 
@@ -13,26 +14,20 @@ import {
   IonCard, 
   IonToolbar 
 } from '@ionic/react';
+
 import { handleSubmit, handlePlayerSubmit } from '../handles/handlesubmit';
 import { firestore } from '../firebase_setup/firebase';
 import { collection, getDocs } from '@firebase/firestore';
-import { useIonViewWillEnter } from '@ionic/react';
-import strikeZoneWhite from '../../public/StrikeZoneWhite.webp';
-import strikeZone from '../../public/StrikeZone.png';
-import { Timestamp } from '@firebase/firestore'; // For Firestore Timestamp
+import strikeZoneWhite from '../../public/StrikeZoneWhite.png';
+import strikeZoneBlack from '../../public/StrikeZoneBlack.png';
 
-
-interface ContainerProps {
-  name: string;
-}
-
-const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
+const DataInputContainer = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [selectedType, setSelectedType] = useState('');
   const [selectedResult, setSelectedResult] = useState('');
   const [showSecondAlert, setShowSecondAlert] = useState(false);
   const [showPlayerAlert, setShowPlayerAlert] = useState(false);
-  const [players, setPlayers] = useState<{ id: string, name: string }[]>([]);
+  const [players, setPlayers] = useState<string[]>([]);
   const [selectedPlayer, setSelectedPlayer] = useState('');
   const [touchCoordinates, setTouchCoordinates] = useState({ x: 0, y: 0 });
   const [strikeZoneImage, setStrikeZoneImage] = useState('');
@@ -40,11 +35,9 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
   const fetchPlayers = async () => {
     try {
       const playersCollection = await getDocs(collection(firestore, 'players'));
-      const playerData = playersCollection.docs.map((doc) => ({
-        id: doc.id, // Use document ID as unique key
-        name: doc.data().name,
-      }));
-      setPlayers(playerData); // Set state with player data
+      const playerNames = playersCollection.docs.map((doc) => doc.data().name); // Ensure unique names
+      
+      setPlayers([...new Set(playerNames)]); // Ensure no duplicates
     } catch (error) {
       console.error('Error fetching players:', error);
     }
@@ -57,8 +50,7 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
 
   const handleSave = async () => {
     console.log("Selected player before submission:", selectedPlayer);
-    //await handleFirstSubmit(selectedPlayer, selectedType, touchCoordinates); // Pitch Type
-    //setSelectedType('');
+
     setShowAlert(false);
     setShowSecondAlert(true);
   };
@@ -100,16 +92,32 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
     setTouchCoordinates({ x: adjustedX, y: offsetY });
   };
 
-  useIonViewWillEnter(() => {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (prefersDark) {
-      setStrikeZoneImage(strikeZoneWhite); // Image for dark mode
-    } else {
-      setStrikeZoneImage(strikeZone); // Image for light mode
-    }
-  });
+  const querySystem = () => {
+    const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
+
+    useEffect(() => {
+      function updateTheme() {
+        const prefersDark = mediaQueryList.matches;
+
+        if (prefersDark) {
+          setStrikeZoneImage(strikeZoneWhite);
+        } else {
+          setStrikeZoneImage(strikeZoneBlack);
+        }
+      }
+
+      updateTheme();
+
+      mediaQueryList.addEventListener('change', updateTheme);
+
+      return () => {
+         mediaQueryList.removeEventListener('change', updateTheme);
+      };
+    }, [mediaQueryList]);
+  };
+
+  querySystem();
   
-  //FIXME: The IonSelectOption for player name input is not centered
   return (
     <IonContent>
       <IonCard>
@@ -120,17 +128,17 @@ const DataInputContainer: React.FC<ContainerProps> = ({ name }) => {
                 <IonIcon icon={person} />
               </IonCol>
               <IonCol size="auto">
-              <IonSelect
-                value={selectedPlayer}
-                placeholder="Select Player"
-                onIonChange={(e) => setSelectedPlayer(e.detail.value)}
-              >
-                {players.map((player) => (
-                  <IonSelectOption key={player.id} value={player.name}>
-                    {player.name}
-                  </IonSelectOption>
-                ))}
-              </IonSelect>
+                <IonSelect
+                  value={selectedPlayer}
+                  placeholder="Select Player"
+                  onIonChange={(e) => setSelectedPlayer(e.detail.value)}
+                >
+                  {players.map((player) => (
+                    <IonSelectOption key={player} value={player}>
+                      {player}
+                    </IonSelectOption>
+                  ))}
+                </IonSelect>
               </IonCol>
               <IonCol size="auto">
                 <IonButton onClick={() => setShowPlayerAlert(true)}>+ Player</IonButton>
